@@ -1,0 +1,12 @@
+{
+	"schema_version": 1,
+	"phase_unlocks": [
+		{ "release_phase": 1, "min_completed_sessions": 0 },
+		{ "release_phase": 2, "min_completed_sessions": 2 }
+	],
+	"session_round_target": 8,
+	"phase_1_session_ids": ["apple", "water", "ball", "book", "dog", "cat"],
+	"phase_1_repeat_ids": ["apple", "dog"],
+	"phase_2_session_ids": ["banana", "bread", "cup", "bottle", "bed", "toy", "bird", "duck"],
+	"phase_2_review_ids": ["apple", "dog"]
+}

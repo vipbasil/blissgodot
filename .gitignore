@@ -1,0 +1,10 @@
+.DS_Store
+docs/.DS_Store
+.godot/
+.vscode/
+*.log
+*.tmp
+mono_crash.*.json
+.mono/
+bin/
+obj/

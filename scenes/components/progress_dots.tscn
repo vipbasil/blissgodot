@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://ct0m3rl86y4hn"]
+
+[ext_resource type="Script" path="res://scripts/components/progress_dots.gd" id="1_n0jhq"]
+
+[node name="ProgressDots" type="HBoxContainer"]
+alignment = 1
+theme_override_constants/separation = 12
+script = ExtResource("1_n0jhq")

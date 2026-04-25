@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://b0g2cnjle8xtu"]
+
+[ext_resource type="Script" path="res://scripts/puzzles/anchor_match_scene.gd" id="1_x1ago"]
+[ext_resource type="PackedScene" path="res://scenes/components/target_card.tscn" id="2_eo3on"]
+[ext_resource type="PackedScene" path="res://scenes/components/option_tray.tscn" id="4_q5qnn"]
+[ext_resource type="PackedScene" path="res://scenes/components/calm_feedback.tscn" id="5_bhi67"]
+
+[node name="AnchorMatchScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_x1ago")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 28
+
+[node name="TargetCard" parent="Layout" instance=ExtResource("2_eo3on")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="OptionTray" parent="Layout" instance=ExtResource("4_q5qnn")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="CalmFeedback" parent="Layout" instance=ExtResource("5_bhi67")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="DragLayer" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

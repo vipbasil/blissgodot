@@ -1,0 +1,29 @@
+{
+	"schema_version": 1,
+	"categories": [
+		{
+			"id": "food",
+			"display_name": "Food",
+			"sort_order": 1,
+			"release_phase": 1,
+			"progression_band_start": "band_a",
+			"enabled": true
+		},
+		{
+			"id": "objects",
+			"display_name": "Objects",
+			"sort_order": 2,
+			"release_phase": 1,
+			"progression_band_start": "band_a",
+			"enabled": true
+		},
+		{
+			"id": "animals",
+			"display_name": "Animals",
+			"sort_order": 3,
+			"release_phase": 1,
+			"progression_band_start": "band_a",
+			"enabled": true
+		}
+	]
+}

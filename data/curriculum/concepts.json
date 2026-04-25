@@ -1,0 +1,145 @@
+{
+	"schema_version": 1,
+	"concepts": [
+		{
+			"id": "apple",
+			"category_id": "food",
+			"release_phase": 1,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/apple.png",
+			"picture_asset": "res://assets/pictures/apple.png",
+			"enabled": true
+		},
+		{
+			"id": "water",
+			"category_id": "food",
+			"release_phase": 1,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/water.png",
+			"picture_asset": "res://assets/pictures/water.png",
+			"enabled": true
+		},
+		{
+			"id": "ball",
+			"category_id": "objects",
+			"release_phase": 1,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/ball.png",
+			"picture_asset": "res://assets/pictures/ball.png",
+			"enabled": true
+		},
+		{
+			"id": "book",
+			"category_id": "objects",
+			"release_phase": 1,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/book.png",
+			"picture_asset": "res://assets/pictures/book.png",
+			"enabled": true
+		},
+		{
+			"id": "dog",
+			"category_id": "animals",
+			"release_phase": 1,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/dog.png",
+			"picture_asset": "res://assets/pictures/dog.png",
+			"enabled": true
+		},
+		{
+			"id": "cat",
+			"category_id": "animals",
+			"release_phase": 1,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/cat.png",
+			"picture_asset": "res://assets/pictures/cat.png",
+			"enabled": true
+		},
+		{
+			"id": "banana",
+			"category_id": "food",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/banana.png",
+			"picture_asset": "res://assets/pictures/banana.png",
+			"enabled": true
+		},
+		{
+			"id": "bread",
+			"category_id": "food",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/bread.png",
+			"picture_asset": "res://assets/pictures/bread.png",
+			"enabled": true
+		},
+		{
+			"id": "cup",
+			"category_id": "food",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/cup.png",
+			"picture_asset": "res://assets/pictures/cup.png",
+			"enabled": true
+		},
+		{
+			"id": "bottle",
+			"category_id": "food",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/bottle.png",
+			"picture_asset": "res://assets/pictures/bottle.png",
+			"enabled": true
+		},
+		{
+			"id": "bed",
+			"category_id": "objects",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/bed.png",
+			"picture_asset": "res://assets/pictures/bed.png",
+			"enabled": true
+		},
+		{
+			"id": "toy",
+			"category_id": "objects",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/toy.png",
+			"picture_asset": "res://assets/pictures/toy.png",
+			"enabled": true
+		},
+		{
+			"id": "bird",
+			"category_id": "animals",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/bird.png",
+			"picture_asset": "res://assets/pictures/bird.png",
+			"enabled": true
+		},
+		{
+			"id": "duck",
+			"category_id": "animals",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/duck.png",
+			"picture_asset": "res://assets/pictures/duck.png",
+			"enabled": true
+		}
+	]
+}

@@ -1,0 +1,62 @@
+[gd_scene load_steps=3 format=3 uid="uid://drp1f7g37iqvv"]
+
+[ext_resource type="Script" path="res://scripts/components/drop_slot.gd" id="1_50xvw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d4r1a"]
+bg_color = Color(0.956863, 0.972549, 0.980392, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.721569, 0.803922, 0.85098, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[node name="DropSlot" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 180)
+script = ExtResource("1_50xvw")
+theme_override_styles/panel = SubResource("StyleBoxFlat_d4r1a")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="SlotTexture" type="TextureRect" parent="Margin"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="EmptyState" type="VBoxContainer" parent="Margin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="IconLabel" type="Label" parent="Margin/EmptyState"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+text = "+"
+
+[node name="HintLabel" type="Label" parent="Margin/EmptyState"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+text = "Place the match"
+
+[node name="FilledLabel" type="Label" parent="Margin"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+text = "Choice"

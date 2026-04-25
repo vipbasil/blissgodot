@@ -1,0 +1,159 @@
+[gd_scene load_steps=4 format=3 uid="uid://bu7pmi0x8tqml"]
+
+[ext_resource type="Script" path="res://scripts/screens/parent_progress_screen.gd" id="1_lxvwd"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_puynn"]
+bg_color = Color(1, 0.996078, 0.984314, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.839216, 0.85098, 0.827451, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mtcba"]
+bg_color = Color(0.901961, 0.913725, 0.898039, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[node name="ParentProgressScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lxvwd")
+
+[node name="Layout" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="Content" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="TitleLabel" type="Label" parent="Layout/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Parent Progress"
+
+[node name="SummaryGrid" type="GridContainer" parent="Layout/Content"]
+layout_mode = 2
+columns = 3
+
+[node name="SessionsCard" type="PanelContainer" parent="Layout/Content/SummaryGrid"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_puynn")
+
+[node name="SessionsMargin" type="MarginContainer" parent="Layout/Content/SummaryGrid/SessionsCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="SessionsBox" type="VBoxContainer" parent="Layout/Content/SummaryGrid/SessionsCard/SessionsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SessionsValueLabel" type="Label" parent="Layout/Content/SummaryGrid/SessionsCard/SessionsMargin/SessionsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+text = "0"
+
+[node name="SessionsCaptionLabel" type="Label" parent="Layout/Content/SummaryGrid/SessionsCard/SessionsMargin/SessionsBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+text = "Sessions"
+
+[node name="SymbolsCard" type="PanelContainer" parent="Layout/Content/SummaryGrid"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_puynn")
+
+[node name="SymbolsMargin" type="MarginContainer" parent="Layout/Content/SummaryGrid/SymbolsCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="SymbolsBox" type="VBoxContainer" parent="Layout/Content/SummaryGrid/SymbolsCard/SymbolsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SymbolsValueLabel" type="Label" parent="Layout/Content/SummaryGrid/SymbolsCard/SymbolsMargin/SymbolsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+text = "0"
+
+[node name="SymbolsCaptionLabel" type="Label" parent="Layout/Content/SummaryGrid/SymbolsCard/SymbolsMargin/SymbolsBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+text = "Symbols"
+
+[node name="CategoriesCard" type="PanelContainer" parent="Layout/Content/SummaryGrid"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_puynn")
+
+[node name="CategoriesMargin" type="MarginContainer" parent="Layout/Content/SummaryGrid/CategoriesCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="CategoriesBox" type="VBoxContainer" parent="Layout/Content/SummaryGrid/CategoriesCard/CategoriesMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="CategoriesValueLabel" type="Label" parent="Layout/Content/SummaryGrid/CategoriesCard/CategoriesMargin/CategoriesBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+text = "0"
+
+[node name="CategoriesCaptionLabel" type="Label" parent="Layout/Content/SummaryGrid/CategoriesCard/CategoriesMargin/CategoriesBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+text = "Categories"
+
+[node name="CategoryHeader" type="Label" parent="Layout/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Categories"
+
+[node name="CategoryRows" type="VBoxContainer" parent="Layout/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BackButton" type="Button" parent="Layout/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_mtcba")
+text = "Back"

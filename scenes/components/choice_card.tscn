@@ -1,0 +1,62 @@
+[gd_scene load_steps=3 format=3 uid="uid://csqb7mdxpw7kb"]
+
+[ext_resource type="Script" path="res://scripts/components/choice_card.gd" id="1_mijdr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s3e65"]
+bg_color = Color(1, 1, 0.992157, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.854902, 0.835294, 0.784314, 0.95)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.06)
+shadow_size = 6
+shadow_offset = Vector2(0, 2)
+
+[node name="ChoiceCard" type="PanelContainer"]
+custom_minimum_size = Vector2(220, 220)
+mouse_filter = 1
+script = ExtResource("1_mijdr")
+theme_override_styles/panel = SubResource("StyleBoxFlat_s3e65")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="ChoiceTexture" type="TextureRect" parent="Margin"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FallbackFrame" type="PanelContainer" parent="Margin"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+
+[node name="FallbackContent" type="VBoxContainer" parent="Margin/FallbackFrame"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FallbackGlyph" type="Label" parent="Margin/FallbackFrame/FallbackContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+horizontal_alignment = 1
+text = "?"
+
+[node name="FallbackCaption" type="Label" parent="Margin/FallbackFrame/FallbackContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+text = "Symbol"

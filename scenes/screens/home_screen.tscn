@@ -1,0 +1,90 @@
+[gd_scene load_steps=5 format=3 uid="uid://cao1w57c1x0sp"]
+
+[ext_resource type="Script" path="res://scripts/screens/home_screen.gd" id="1_u6rjl"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qh5nh"]
+bg_color = Color(1, 0.996078, 0.980392, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.870588, 0.835294, 0.764706, 0.95)
+corner_radius_top_left = 36
+corner_radius_top_right = 36
+corner_radius_bottom_right = 36
+corner_radius_bottom_left = 36
+shadow_color = Color(0, 0, 0, 0.08)
+shadow_size = 10
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2ly8s"]
+bg_color = Color(0.494118, 0.690196, 0.592157, 1)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i7asp"]
+bg_color = Color(0.901961, 0.913725, 0.898039, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[node name="HomeScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_u6rjl")
+
+[node name="CenterBox" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -140.0
+offset_right = 180.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_qh5nh")
+
+[node name="Margin" type="MarginContainer" parent="CenterBox"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 28
+
+[node name="Content" type="VBoxContainer" parent="CenterBox/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="TitleLabel" type="Label" parent="CenterBox/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 46
+horizontal_alignment = 1
+text = "Bliss"
+
+[node name="PlayButton" type="Button" parent="CenterBox/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 34
+theme_override_styles/normal = SubResource("StyleBoxFlat_2ly8s")
+text = "Play"
+
+[node name="ParentButton" type="Button" parent="CenterBox/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7asp")
+text = "Parent"
