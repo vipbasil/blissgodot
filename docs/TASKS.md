@@ -15,9 +15,9 @@ Agents should keep it current.
 
 ## Todo
 
-- Run the dedicated `Anchor Match` physical-drag QA checklist interactively and on target touch input.
 - Run `MainProgressScreen` Phase 5 integration QA for post-summary reveal, restart persistence, replay stability, and release-phase visibility.
-- Run an Android export verification pass on a machine with Godot plus valid Java SDK and Android SDK paths configured in Editor Settings.
+- Run the dedicated `Anchor Match` physical-drag QA checklist interactively and on target touch input.
+- Add a real project icon in Project Settings so Android export no longer warns about a missing application icon.
 - Align exact star thresholds and learned/mastered thresholds after first-playable validation.
 - Expand the save and parent-progress view once category mastery rules are finalized.
 
@@ -25,12 +25,18 @@ Agents should keep it current.
 
 - `Milestone 2: First Playable Puzzle`
   Current focus: turn the scaffold into a more polished, testable first playable session.
+- `Lead routing refresh after MainProgress Phase 4`
+  Execution owner: `lead agent`
+  Scope: keep Android export isolated as an environment blocker, route the next unblocked QA slices, and avoid new feature expansion until the current validation passes land.
 
 ## Done
 
 - `Android export preset hardening`
   Execution owner: `godot worker agent`
   Scope: made `export_presets.cfg` project-side Android values sane without attempting machine-level SDK/JDK/template installation.
+- `Godot Android editor-settings inspection`
+  Execution owner: `godot explorer agent`
+  Scope: verified that the failing Godot `4.6.1` app was reading `editor_settings-4.6.tres`, populated that file with the Android SDK and JDK 17 paths, removed Gradle-only Android preset overrides that are invalid when Gradle build is off, and reran headless export successfully.
 - Produced a UI/UX design-only spec for `MainProgressScreen` in `docs/MAIN_PROGRESS_SCREEN_UI.md`, adapting the MITA path structure to Bliss while keeping the child flow calm and text-light.
 - Created the project-local memory system, shared knowledge base, role files, worklogs, and dedicated role skills.
 - Added BA agent support and explicit orchestration rules for BA, lead, and specialist routing.

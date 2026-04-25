@@ -2,13 +2,13 @@
 
 ## Current Focus
 
-- Android export preset hardening is complete on the project side; remaining Android export risk is now machine-level validation only
+- Android export is now working headlessly; the remaining Android follow-up is a project icon warning rather than toolchain failure.
 
 ## Active Tasks
 
 - Track follow-up risks around content schema, parent metrics, and asset pipeline dependencies
 - Promote only lead-approved durable runtime contracts beyond the local worklog
-- Keep Android export follow-up narrow to environment validation rather than more speculative preset churn
+- Keep Android export follow-up narrow to small polish items like project icon setup rather than reopening solved toolchain work
 
 ## Local Notes
 
@@ -22,6 +22,10 @@
 - Main progress should resolve authored node state through a provider fed by `ContentDB` and `AppState`, not inside screen scripts.
 - Architecture plan approved `MainProgressScreen` with provider-owned node resolution and summary-gated progression commits through `main.gd`.
 - Android preset now uses `com.vasilibraga.bliss`, `Bliss`, `0.1.0`, `min_sdk 24`, `target_sdk 35`, `builds/android/bliss.apk`, and `gradle_build/use_gradle_build=false`; launcher icon fields intentionally remain blank because no Android-specific icon assets exist in the repo and the project does not use a custom Android source template.
+- Machine state now includes Homebrew `openjdk@17` at `/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home`, Android SDK `platforms/android-35`, and `build-tools/35.0.1`.
+- Godot `4.6.1` was reading `/Users/vasilibraga/Library/Application Support/Godot/editor_settings-4.6.tres`, not just `editor_settings-4.tres`; that `4.6` file now contains `export/android/java_sdk_path=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home` and `export/android/android_sdk_path=/Users/vasilibraga/Library/Android/sdk`.
+- Godot `4.6.1` rejects `gradle_build/compress_native_libraries`, `gradle_build/min_sdk`, and `gradle_build/target_sdk` when `gradle_build/use_gradle_build=false`, so those overrides were removed from `export_presets.cfg`.
+- Headless debug export now succeeds to `/tmp/bliss-test-debug.apk`; the remaining warning is the missing project icon in Project Settings.
 
 ## Risks
 
@@ -29,7 +33,7 @@
 - Parent mastery thresholds and reporting rules still need alignment with the parent-progress agent.
 - Asset import and naming pipeline for Bliss symbols and generated pictures is still open across roles.
 - If multiple agents define competing runtime contracts before lead integration, drift will appear quickly.
-- Android export can still fail until the machine has valid Java SDK and Android SDK paths configured in Godot Editor Settings.
+- Android polish can drift if icon and signing expectations are not kept separate from the now-working debug export path.
 
 ## Next Update
 

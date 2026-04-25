@@ -8,3 +8,8 @@ mono_crash.*.json
 .mono/
 bin/
 obj/
+android/
+bliss-test-debug.apk
+builds/android/*
+!builds/android/
+!builds/android/bliss.apk
