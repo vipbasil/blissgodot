@@ -1,11 +1,13 @@
 extends Node
 
 const CONCEPTS_PATH := "res://data/curriculum/concepts.json"
+const COMPOSITIONS_PATH := "res://data/curriculum/compositions.json"
 const CATEGORIES_PATH := "res://data/curriculum/categories.json"
 const APP_CONFIG_PATH := "res://data/config/app_config.json"
 const PROGRESSION_NODES_PATH := "res://data/progression/progression_nodes.json"
 
 var concepts_by_id: Dictionary = {}
+var compositions_by_id: Dictionary = {}
 var categories: Array[Dictionary] = []
 var app_config: Dictionary = {}
 var progression_nodes_by_id: Dictionary = {}
@@ -18,6 +20,7 @@ func _ready() -> void:
 
 func load_content() -> void:
     concepts_by_id.clear()
+    compositions_by_id.clear()
     categories.clear()
     progression_nodes_by_id.clear()
     progression_nodes.clear()
@@ -26,6 +29,11 @@ func load_content() -> void:
     for concept in concepts_doc.get("concepts", []):
         var row: Dictionary = concept
         concepts_by_id[String(row.get("id", ""))] = row
+
+    var compositions_doc: Dictionary = _load_json(COMPOSITIONS_PATH)
+    for composition in compositions_doc.get("compositions", []):
+        var row: Dictionary = composition
+        compositions_by_id[String(row.get("id", ""))] = row
 
     var categories_doc: Dictionary = _load_json(CATEGORIES_PATH)
     for category in categories_doc.get("categories", []):
@@ -52,6 +60,10 @@ func get_concept(concept_id: String) -> Dictionary:
 
 func get_categories() -> Array[Dictionary]:
     return categories.duplicate(true)
+
+
+func get_composition(composition_id: String) -> Dictionary:
+    return compositions_by_id.get(composition_id, {}).duplicate(true)
 
 
 func get_progression_node(node_id: String) -> Dictionary:
@@ -115,7 +127,7 @@ func build_first_playable_session_plan(use_intro: bool, prior_completed_sessions
         var choice_count: int = 3
         if use_intro and prior_completed_sessions == 0 and index < 2:
             choice_count = 2
-        rounds.append(_build_round_def(concept_id, choice_count, candidate_ids))
+        rounds.append(_build_anchor_round_def(concept_id, choice_count, candidate_ids))
 
     return {
         "session_id": "first_playable",
@@ -152,13 +164,22 @@ func build_session_plan_for_node(node_id: String, prior_completed_sessions: int)
     var use_intro_rules := bool(node_def.get("use_intro_rules", false))
     var intro_round_count: int = max(0, int(node_def.get("intro_round_count", 0)))
     var default_choice_count: int = max(2, int(node_def.get("default_choice_count", 3)))
+    var puzzle_type: String = String(node_def.get("puzzle_type", "anchor_match"))
+    var composition_candidate_ids: Array[String] = _get_released_composition_ids(prior_completed_sessions)
 
     for index in round_concepts.size():
         var concept_id: String = round_concepts[index]
         var choice_count: int = default_choice_count
         if use_intro_rules and prior_completed_sessions == 0 and index < intro_round_count:
             choice_count = min(choice_count, 2)
-        rounds.append(_build_round_def(concept_id, choice_count, candidate_ids))
+        rounds.append(_build_round_def_for_puzzle_type(
+            puzzle_type,
+            concept_id,
+            choice_count,
+            candidate_ids,
+            composition_candidate_ids,
+            index
+        ))
 
     return {
         "session_id": node_id,
@@ -169,7 +190,22 @@ func build_session_plan_for_node(node_id: String, prior_completed_sessions: int)
     }
 
 
-func _build_round_def(concept_id: String, choice_count: int, candidate_ids: Array[String]) -> Dictionary:
+func _build_round_def_for_puzzle_type(
+    puzzle_type: String,
+    concept_id: String,
+    choice_count: int,
+    candidate_ids: Array[String],
+    composition_candidate_ids: Array[String] = [],
+    round_index: int = 0
+) -> Dictionary:
+    if puzzle_type == "reverse_anchor_match":
+        return _build_reverse_anchor_round_def(concept_id, choice_count, candidate_ids)
+    if puzzle_type == "pair_completion":
+        return _build_pair_completion_round_def(concept_id, choice_count, composition_candidate_ids, round_index)
+    return _build_anchor_round_def(concept_id, choice_count, candidate_ids)
+
+
+func _build_anchor_round_def(concept_id: String, choice_count: int, candidate_ids: Array[String]) -> Dictionary:
     var correct_concept: Dictionary = get_concept(concept_id)
     var distractor_ids: Array[String] = []
     for candidate in candidate_ids:
@@ -180,7 +216,7 @@ func _build_round_def(concept_id: String, choice_count: int, candidate_ids: Arra
     var choices: Array[Dictionary] = []
     choices.append({
         "id": concept_id,
-        "symbol_asset": String(correct_concept.get("symbol_asset", "")),
+        "asset_path": String(correct_concept.get("symbol_asset", "")),
     })
 
     var distractor_count: int = max(choice_count - 1, 0)
@@ -189,19 +225,204 @@ func _build_round_def(concept_id: String, choice_count: int, candidate_ids: Arra
         var distractor_concept: Dictionary = get_concept(distractor_id)
         choices.append({
             "id": distractor_id,
-            "symbol_asset": String(distractor_concept.get("symbol_asset", "")),
+            "asset_path": String(distractor_concept.get("symbol_asset", "")),
         })
 
     return {
         "puzzle_type": "anchor_match",
         "concept_id": concept_id,
-        "target_picture_asset": String(correct_concept.get("picture_asset", "")),
-        "correct_symbol_asset": String(correct_concept.get("symbol_asset", "")),
+        "target_asset_path": String(correct_concept.get("picture_asset", "")),
+        "target_content_kind": "picture",
+        "correct_choice_asset_path": String(correct_concept.get("symbol_asset", "")),
+        "choice_content_kind": "symbol",
         "choice_count": choices.size(),
         "correct_choice_id": concept_id,
         "choices": choices,
         "max_wrong_attempts_before_support": 2,
     }
+
+
+func _build_reverse_anchor_round_def(concept_id: String, choice_count: int, candidate_ids: Array[String]) -> Dictionary:
+    var correct_concept: Dictionary = get_concept(concept_id)
+    var distractor_ids: Array[String] = []
+    for candidate in candidate_ids:
+        if candidate == concept_id:
+            continue
+        distractor_ids.append(candidate)
+
+    var choices: Array[Dictionary] = []
+    choices.append({
+        "id": concept_id,
+        "asset_path": String(correct_concept.get("picture_asset", "")),
+    })
+
+    var distractor_count: int = max(choice_count - 1, 0)
+    for i in min(distractor_count, distractor_ids.size()):
+        var distractor_id: String = distractor_ids[i]
+        var distractor_concept: Dictionary = get_concept(distractor_id)
+        choices.append({
+            "id": distractor_id,
+            "asset_path": String(distractor_concept.get("picture_asset", "")),
+        })
+
+    return {
+        "puzzle_type": "reverse_anchor_match",
+        "concept_id": concept_id,
+        "target_asset_path": String(correct_concept.get("symbol_asset", "")),
+        "target_content_kind": "symbol",
+        "correct_choice_asset_path": String(correct_concept.get("picture_asset", "")),
+        "choice_content_kind": "picture",
+        "choice_count": choices.size(),
+        "correct_choice_id": concept_id,
+        "choices": choices,
+        "max_wrong_attempts_before_support": 2,
+    }
+
+
+func _build_pair_completion_round_def(
+    composition_id: String,
+    choice_count: int,
+    composition_candidate_ids: Array[String],
+    round_index: int
+) -> Dictionary:
+    var composition: Dictionary = get_composition(composition_id)
+    if composition.is_empty():
+        return {}
+
+    var base_concept_id: String = String(composition.get("base_concept_id", ""))
+    var base_concept: Dictionary = get_concept(base_concept_id)
+    var modifier_id: String = String(composition.get("modifier_id", ""))
+    var modifier_asset: String = String(composition.get("modifier_symbol_asset", ""))
+    var is_modifier_missing: bool = (round_index % 2) == 0
+    var formula_slots: Array[Dictionary] = []
+    var choices: Array[Dictionary] = []
+
+    if is_modifier_missing:
+        formula_slots = [
+            {
+                "id": "",
+                "asset_path": "",
+                "content_kind": "symbol",
+                "is_missing": true,
+            },
+            {
+                "id": base_concept_id,
+                "asset_path": String(base_concept.get("symbol_asset", "")),
+                "content_kind": "symbol",
+                "is_missing": false,
+            },
+        ]
+
+        var modifier_choices: Array[Dictionary] = _build_modifier_symbol_choices(
+            modifier_id,
+            choice_count,
+            composition_candidate_ids
+        )
+        choices.append_array(modifier_choices)
+    else:
+        formula_slots = [
+            {
+                "id": modifier_id,
+                "asset_path": modifier_asset,
+                "content_kind": "symbol",
+                "is_missing": false,
+            },
+            {
+                "id": "",
+                "asset_path": "",
+                "content_kind": "symbol",
+                "is_missing": true,
+            },
+        ]
+
+        var noun_choices: Array[Dictionary] = _build_noun_symbol_choices(
+            base_concept_id,
+            choice_count,
+            composition_candidate_ids
+        )
+        choices.append_array(noun_choices)
+
+    return {
+        "puzzle_type": "pair_completion",
+        "composition_id": composition_id,
+        "concept_id": base_concept_id,
+        "result_asset_path": String(composition.get("result_picture_asset", "")),
+        "result_picture_scale": float(composition.get("result_picture_scale", 0.72)),
+        "choice_content_kind": "symbol",
+        "formula_slots": formula_slots,
+        "correct_choice_id": modifier_id if is_modifier_missing else base_concept_id,
+        "correct_choice_asset_path": modifier_asset if is_modifier_missing else String(base_concept.get("symbol_asset", "")),
+        "choice_count": choices.size(),
+        "choices": choices,
+        "max_wrong_attempts_before_support": 2,
+    }
+
+
+func _build_modifier_symbol_choices(
+    correct_modifier_id: String,
+    choice_count: int,
+    composition_candidate_ids: Array[String]
+) -> Array[Dictionary]:
+    var unique_modifiers: Dictionary = {}
+    for composition_id in composition_candidate_ids:
+        var composition: Dictionary = get_composition(composition_id)
+        var modifier_id: String = String(composition.get("modifier_id", ""))
+        if modifier_id.is_empty() or unique_modifiers.has(modifier_id):
+            continue
+        unique_modifiers[modifier_id] = String(composition.get("modifier_symbol_asset", ""))
+
+    var choices: Array[Dictionary] = []
+    if unique_modifiers.has(correct_modifier_id):
+        choices.append({
+            "id": correct_modifier_id,
+            "asset_path": String(unique_modifiers[correct_modifier_id]),
+        })
+
+    for modifier_id in unique_modifiers.keys():
+        var normalized_id := String(modifier_id)
+        if normalized_id == correct_modifier_id:
+            continue
+        if choices.size() >= max(choice_count, 2):
+            break
+        choices.append({
+            "id": normalized_id,
+            "asset_path": String(unique_modifiers[modifier_id]),
+        })
+    return choices
+
+
+func _build_noun_symbol_choices(
+    correct_base_concept_id: String,
+    choice_count: int,
+    composition_candidate_ids: Array[String]
+) -> Array[Dictionary]:
+    var unique_base_ids: Dictionary = {}
+    for composition_id in composition_candidate_ids:
+        var composition: Dictionary = get_composition(composition_id)
+        var base_concept_id: String = String(composition.get("base_concept_id", ""))
+        if base_concept_id.is_empty() or unique_base_ids.has(base_concept_id):
+            continue
+        var base_concept: Dictionary = get_concept(base_concept_id)
+        unique_base_ids[base_concept_id] = String(base_concept.get("symbol_asset", ""))
+
+    var choices: Array[Dictionary] = []
+    if unique_base_ids.has(correct_base_concept_id):
+        choices.append({
+            "id": correct_base_concept_id,
+            "asset_path": String(unique_base_ids[correct_base_concept_id]),
+        })
+
+    for base_concept_id in unique_base_ids.keys():
+        var normalized_id := String(base_concept_id)
+        if normalized_id == correct_base_concept_id:
+            continue
+        if choices.size() >= max(choice_count, 2):
+            break
+        choices.append({
+            "id": normalized_id,
+            "asset_path": String(unique_base_ids[base_concept_id]),
+        })
+    return choices
 
 
 func _build_phase_round_concepts(active_phase: int, prior_completed_sessions: int) -> Array[String]:
@@ -333,6 +554,26 @@ func _get_released_candidate_ids(completed_sessions: int) -> Array[String]:
             continue
 
         var normalized_id := String(concept_id)
+        if seen.has(normalized_id):
+            continue
+        seen[normalized_id] = true
+        out.append(normalized_id)
+    out.sort()
+    return out
+
+
+func _get_released_composition_ids(completed_sessions: int) -> Array[String]:
+    var max_phase: int = get_unlocked_release_phase(completed_sessions)
+    var out: Array[String] = []
+    var seen: Dictionary = {}
+    for composition_id in compositions_by_id.keys():
+        var composition: Dictionary = compositions_by_id[composition_id]
+        if int(composition.get("release_phase", 999)) > max_phase:
+            continue
+        if not bool(composition.get("enabled", true)):
+            continue
+
+        var normalized_id := String(composition_id)
         if seen.has(normalized_id):
             continue
         seen[normalized_id] = true

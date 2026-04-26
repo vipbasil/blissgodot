@@ -1,0 +1,147 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/puzzles/pair_completion_scene.gd" id="1_khf0e"]
+[ext_resource type="PackedScene" path="res://scenes/components/option_tray.tscn" id="2_1v8s1"]
+[ext_resource type="PackedScene" path="res://scenes/components/calm_feedback.tscn" id="3_axy18"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n4wy6"]
+bg_color = Color(1, 0.992157, 0.972549, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.87451, 0.835294, 0.760784, 0.9)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+shadow_color = Color(0, 0, 0, 0.08)
+shadow_size = 8
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wdb8t"]
+bg_color = Color(1, 0.996078, 0.984314, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.87451, 0.835294, 0.760784, 0.95)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[node name="PairCompletionScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_khf0e")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 28
+
+[node name="ResultCard" type="PanelContainer" parent="Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 420)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_n4wy6")
+
+[node name="ResultMargin" type="MarginContainer" parent="Layout/ResultCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="ResultPictureHolder" type="CenterContainer" parent="Layout/ResultCard/ResultMargin"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ResultTexture" type="TextureRect" parent="Layout/ResultCard/ResultMargin/ResultPictureHolder"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 260)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FormulaRow" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="LeftSlot" type="PanelContainer" parent="Layout/FormulaRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 220)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wdb8t")
+
+[node name="LeftSlotAnchor" type="Control" parent="Layout/FormulaRow/LeftSlot"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -110.0
+offset_top = -110.0
+offset_right = 110.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PlusLabel" type="Label" parent="Layout/FormulaRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RightSlot" type="PanelContainer" parent="Layout/FormulaRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 220)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wdb8t")
+
+[node name="RightSlotAnchor" type="Control" parent="Layout/FormulaRow/RightSlot"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -110.0
+offset_top = -110.0
+offset_right = 110.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OptionTray" parent="Layout" instance=ExtResource("2_1v8s1")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="CalmFeedback" parent="Layout" instance=ExtResource("3_axy18")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="DragLayer" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

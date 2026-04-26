@@ -44,6 +44,14 @@
 - Puzzle scenes should receive prepared `PuzzleRoundDef` data and must not read curriculum JSON or assemble distractors themselves
 - Supported success should still end with the child placing the final correct card after distractors are removed; it should not auto-complete
 - Later content phases should reserve review slots for already released concepts instead of replacing earlier targets completely
+- Bliss puzzle planning should treat symbols as meaning-bearing language units, not only visual shapes
+- Puzzle families should be classified as `symbol-first`, `picture-first side content`, or `avoid for core Bliss`
+- `Pair Completion` is approved as a symbol-composition puzzle rather than an incomplete picture pair; its first implementation should be `Composition Line`, with `Intersection Table` reserved for later
+- Adjective+noun meanings such as `small apple` and `big tree` should be taught as combinable symbol phrases rather than picture-size comparisons
+- The approved next puzzle-build order is `Reverse Anchor Match -> Pair Completion (Composition Line) -> Odd One Out -> Category Sort -> Sequence Ordering`
+- `Reverse Anchor Match` is now implemented in the runtime with `SessionScreen` dispatch by `puzzle_type`, generic round asset fields, and an early progression node `phase_1_reverse_01` immediately after `phase_1_anchor_01`
+- `Pair Completion` is now implemented in the runtime as a real `Composition Line` puzzle using imported Bliss `small` and `big` modifier symbols plus the first composition records `small_apple`, `big_apple`, `small_ball`, and `big_ball`
+- The next runtime validation for puzzle expansion is a focused QA pass covering both `phase_1_reverse_01` and `phase_1_pair_01`, not another taxonomy or architecture debate
 
 ## Open Questions
 

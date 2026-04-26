@@ -1,0 +1,45 @@
+{
+	"schema_version": 1,
+	"compositions": [
+		{
+			"id": "small_apple",
+			"release_phase": 1,
+			"enabled": true,
+			"modifier_id": "small",
+			"modifier_symbol_asset": "res://assets/bliss_symbols/small.png",
+			"base_concept_id": "apple",
+			"result_picture_asset": "res://assets/pictures/apple.png",
+			"result_picture_scale": 0.44
+		},
+		{
+			"id": "big_apple",
+			"release_phase": 1,
+			"enabled": true,
+			"modifier_id": "big",
+			"modifier_symbol_asset": "res://assets/bliss_symbols/big.png",
+			"base_concept_id": "apple",
+			"result_picture_asset": "res://assets/pictures/apple.png",
+			"result_picture_scale": 0.82
+		},
+		{
+			"id": "small_ball",
+			"release_phase": 1,
+			"enabled": true,
+			"modifier_id": "small",
+			"modifier_symbol_asset": "res://assets/bliss_symbols/small.png",
+			"base_concept_id": "ball",
+			"result_picture_asset": "res://assets/pictures/ball.png",
+			"result_picture_scale": 0.44
+		},
+		{
+			"id": "big_ball",
+			"release_phase": 1,
+			"enabled": true,
+			"modifier_id": "big",
+			"modifier_symbol_asset": "res://assets/bliss_symbols/big.png",
+			"base_concept_id": "ball",
+			"result_picture_asset": "res://assets/pictures/ball.png",
+			"result_picture_scale": 0.82
+		}
+	]
+}

@@ -6,7 +6,7 @@
 			"category_id": "food",
 			"release_phase": 1,
 			"progression_band_start": "band_a",
-			"default_puzzle_types": ["anchor_match"],
+			"default_puzzle_types": ["anchor_match", "reverse_anchor_match", "pair_completion"],
 			"symbol_asset": "res://assets/bliss_symbols/apple.png",
 			"picture_asset": "res://assets/pictures/apple.png",
 			"enabled": true
@@ -16,7 +16,7 @@
 			"category_id": "food",
 			"release_phase": 1,
 			"progression_band_start": "band_a",
-			"default_puzzle_types": ["anchor_match"],
+			"default_puzzle_types": ["anchor_match", "reverse_anchor_match"],
 			"symbol_asset": "res://assets/bliss_symbols/water.png",
 			"picture_asset": "res://assets/pictures/water.png",
 			"enabled": true
@@ -26,7 +26,7 @@
 			"category_id": "objects",
 			"release_phase": 1,
 			"progression_band_start": "band_a",
-			"default_puzzle_types": ["anchor_match"],
+			"default_puzzle_types": ["anchor_match", "reverse_anchor_match", "pair_completion"],
 			"symbol_asset": "res://assets/bliss_symbols/ball.png",
 			"picture_asset": "res://assets/pictures/ball.png",
 			"enabled": true
@@ -36,7 +36,7 @@
 			"category_id": "objects",
 			"release_phase": 1,
 			"progression_band_start": "band_a",
-			"default_puzzle_types": ["anchor_match"],
+			"default_puzzle_types": ["anchor_match", "reverse_anchor_match"],
 			"symbol_asset": "res://assets/bliss_symbols/book.png",
 			"picture_asset": "res://assets/pictures/book.png",
 			"enabled": true
@@ -46,7 +46,7 @@
 			"category_id": "animals",
 			"release_phase": 1,
 			"progression_band_start": "band_a",
-			"default_puzzle_types": ["anchor_match"],
+			"default_puzzle_types": ["anchor_match", "reverse_anchor_match"],
 			"symbol_asset": "res://assets/bliss_symbols/dog.png",
 			"picture_asset": "res://assets/pictures/dog.png",
 			"enabled": true
@@ -56,7 +56,7 @@
 			"category_id": "animals",
 			"release_phase": 1,
 			"progression_band_start": "band_a",
-			"default_puzzle_types": ["anchor_match"],
+			"default_puzzle_types": ["anchor_match", "reverse_anchor_match"],
 			"symbol_asset": "res://assets/bliss_symbols/cat.png",
 			"picture_asset": "res://assets/pictures/cat.png",
 			"enabled": true

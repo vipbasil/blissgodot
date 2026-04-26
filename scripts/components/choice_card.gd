@@ -13,7 +13,8 @@ const SELF_SCENE := preload("res://scenes/components/choice_card.tscn")
 @onready var fallback_caption: Label = %FallbackCaption
 
 var choice_id: String
-var symbol_asset: String
+var asset_path: String
+var content_kind := "symbol"
 var source_hidden := false
 
 
@@ -21,9 +22,10 @@ func _ready() -> void:
 	_refresh_visual()
 
 
-func set_choice_data(new_choice_id: String, new_symbol_asset: String) -> void:
+func set_choice_data(new_choice_id: String, new_asset_path: String, new_content_kind: String = "symbol") -> void:
 	choice_id = new_choice_id
-	symbol_asset = new_symbol_asset
+	asset_path = new_asset_path
+	content_kind = _normalize_content_kind(new_content_kind)
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	if is_node_ready():
 		_refresh_visual()
@@ -33,13 +35,21 @@ func get_choice_id() -> String:
 	return choice_id
 
 
+func get_asset_path() -> String:
+	return asset_path
+
+
 func get_symbol_asset() -> String:
-	return symbol_asset
+	return asset_path
+
+
+func get_content_kind() -> String:
+	return content_kind
 
 
 func build_drag_proxy(source_size: Vector2) -> Control:
 	var proxy = SELF_SCENE.instantiate()
-	proxy.set_choice_data(choice_id, symbol_asset)
+	proxy.set_choice_data(choice_id, asset_path, content_kind)
 	proxy.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	proxy.z_index = 50
 	proxy.custom_minimum_size = source_size
@@ -95,14 +105,14 @@ func _refresh_visual() -> void:
 		return
 
 	var texture: Texture2D = null
-	if not symbol_asset.is_empty() and ResourceLoader.exists(symbol_asset):
-		texture = load(symbol_asset) as Texture2D
+	if not asset_path.is_empty() and ResourceLoader.exists(asset_path):
+		texture = load(asset_path) as Texture2D
 
 	texture_rect.texture = texture
 	texture_rect.visible = texture != null
 	fallback_frame.visible = texture == null
 	fallback_glyph.text = _build_fallback_glyph(choice_id)
-	fallback_caption.text = _build_fallback_caption(choice_id)
+	fallback_caption.text = _build_fallback_caption(choice_id, content_kind)
 
 
 func _build_fallback_glyph(source_id: String) -> String:
@@ -111,7 +121,13 @@ func _build_fallback_glyph(source_id: String) -> String:
 	return source_id.left(1).to_upper()
 
 
-func _build_fallback_caption(source_id: String) -> String:
+func _build_fallback_caption(source_id: String, source_content_kind: String) -> String:
 	if source_id.is_empty():
-		return "Symbol"
+		return "Picture" if source_content_kind == "picture" else "Symbol"
 	return source_id.capitalize()
+
+
+func _normalize_content_kind(raw_kind: String) -> String:
+	if raw_kind == "picture":
+		return "picture"
+	return "symbol"

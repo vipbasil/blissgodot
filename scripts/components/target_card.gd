@@ -8,13 +8,15 @@ extends PanelContainer
 
 var current_concept_id := ""
 var current_asset_path := ""
+var current_content_kind := "picture"
 var expected_choice_id := ""
 var is_filled := false
 
 
-func set_content(concept_id: String, asset_path: String) -> void:
+func set_content(concept_id: String, asset_path: String, content_kind: String = "picture") -> void:
 	current_concept_id = concept_id
 	current_asset_path = asset_path
+	current_content_kind = _normalize_content_kind(content_kind)
 	if not is_node_ready():
 		return
 
@@ -26,7 +28,7 @@ func set_content(concept_id: String, asset_path: String) -> void:
 	texture_rect.visible = texture != null
 	fallback_frame.visible = texture == null
 	fallback_glyph.text = _build_fallback_glyph(current_concept_id)
-	fallback_caption.text = _build_fallback_caption(current_concept_id)
+	fallback_caption.text = _build_fallback_caption(current_concept_id, current_content_kind)
 
 
 func set_expected_choice(choice_id: String) -> void:
@@ -38,7 +40,7 @@ func set_expected_choice(choice_id: String) -> void:
 	modulate = Color(1, 1, 1, 1)
 
 
-func set_filled(_choice_id: String, _symbol_asset: String) -> void:
+func set_filled(_choice_id: String, _asset_path: String = "", _content_kind: String = "") -> void:
 	is_filled = true
 	if not is_node_ready():
 		return
@@ -47,7 +49,7 @@ func set_filled(_choice_id: String, _symbol_asset: String) -> void:
 
 
 func _ready() -> void:
-	set_content(current_concept_id, current_asset_path)
+	set_content(current_concept_id, current_asset_path, current_content_kind)
 
 
 func set_drag_target_ready(is_ready: bool) -> void:
@@ -72,7 +74,13 @@ func _build_fallback_glyph(source_id: String) -> String:
 	return source_id.left(1).to_upper()
 
 
-func _build_fallback_caption(source_id: String) -> String:
+func _build_fallback_caption(source_id: String, source_content_kind: String) -> String:
 	if source_id.is_empty():
-		return "Picture"
+		return "Symbol" if source_content_kind == "symbol" else "Picture"
 	return source_id.capitalize()
+
+
+func _normalize_content_kind(raw_kind: String) -> String:
+	if raw_kind == "symbol":
+		return "symbol"
+	return "picture"

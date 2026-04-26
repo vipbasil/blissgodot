@@ -2,11 +2,13 @@
 
 ## Current Focus
 
-- First-pass Milestone 1 game design for the `Anchor Match` first playable is drafted in `docs/GAME_DESIGN.md`.
+- Define the next symbol-first puzzle families for Bliss before more noun-only content expansion.
 
 ## Active Tasks
 
-- None currently.
+- Keep the next puzzle roadmap centered on symbol meaning, not just picture perception.
+- Treat `Reverse Anchor Match` and `Pair Completion` as the strongest next puzzle families.
+- Keep `Composition Line` ahead of `Intersection Table` in implementation order.
 
 ## Local Notes
 
@@ -16,14 +18,15 @@
 - Use shallow support logic only: first wrong answer removes a distractor, repeated struggle becomes supported success.
 - Session-end stars should reflect support needed, but must never block completion or unlocks.
 - Proposed Milestone 1 learned rule: `3` exposures plus `2` independent successes for a concept.
-- No shared-memory update yet; thresholds should be treated as first-pass until validated against implementation and playtest behavior.
+- Adjective+noun meanings such as `small apple` should be introduced as symbol combinations, not raw image-size comparison.
+- `Pair Completion` should mean `result = symbol1 + symbol2` with one missing symbol, not a half-picture puzzle.
 
 ## Risks
 
 - Star thresholds and learned thresholds may need adjustment after observing the first child playtests.
 - Gameplay and parent-progress agents will need to align on whether `supported success` is stored explicitly or derived from attempt history.
-- Content and gameplay implementation must avoid introducing extra prompts or reverse-match mixing into the first playable.
+- Picture-only puzzle families can accidentally drift away from symbol meaning if they are promoted too early.
 
 ## Next Update
 
-- Promote stable puzzle or progression decisions to shared memory and the knowledge base.
+- Promote the approved next puzzle-build order into implementation planning once the lead selects the next slice.
