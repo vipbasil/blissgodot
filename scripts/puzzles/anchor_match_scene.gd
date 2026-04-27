@@ -38,7 +38,12 @@ func begin_round() -> void:
         return
 
     _clear_drag_state(true)
-    target_card.set_content(String(round_def.get("concept_id", "")), String(round_def.get("target_picture_asset", "")))
+    target_card.set_content(
+        String(round_def.get("concept_id", "")),
+        String(round_def.get("target_picture_asset", "")),
+        "picture",
+        float(round_def.get("target_picture_scale", 1.0))
+    )
     target_card.set_expected_choice(String(round_def.get("correct_choice_id", "")))
     option_tray.clear_choices()
     choice_cards.clear()

@@ -29,11 +29,14 @@ theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 24
 
-[node name="ContentTexture" type="TextureRect" parent="Margin"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 320)
+[node name="ContentHolder" type="CenterContainer" parent="Margin"]
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="ContentTexture" type="TextureRect" parent="Margin/ContentHolder"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 320)
+layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 

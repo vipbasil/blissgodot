@@ -7,6 +7,7 @@
 			"sort_order": 1,
 			"release_phase": 1,
 			"progression_band_start": "band_a",
+			"reporting_group": "food",
 			"enabled": true
 		},
 		{
@@ -15,6 +16,7 @@
 			"sort_order": 2,
 			"release_phase": 1,
 			"progression_band_start": "band_a",
+			"reporting_group": "objects",
 			"enabled": true
 		},
 		{
@@ -23,6 +25,25 @@
 			"sort_order": 3,
 			"release_phase": 1,
 			"progression_band_start": "band_a",
+			"reporting_group": "animals",
+			"enabled": true
+		},
+		{
+			"id": "body_parts",
+			"display_name": "Body Parts",
+			"sort_order": 4,
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"reporting_group": "body_parts",
+			"enabled": true
+		},
+		{
+			"id": "qualities",
+			"display_name": "Qualities",
+			"sort_order": 5,
+			"release_phase": 1,
+			"progression_band_start": "band_a",
+			"reporting_group": "qualities",
 			"enabled": true
 		}
 	]

@@ -3,12 +3,22 @@ extends Node
 const CONCEPTS_PATH := "res://data/curriculum/concepts.json"
 const COMPOSITIONS_PATH := "res://data/curriculum/compositions.json"
 const CATEGORIES_PATH := "res://data/curriculum/categories.json"
+const SYMBOLS_PATH := "res://data/curriculum/symbols.json"
+const TRACKS_PATH := "res://data/curriculum/tracks.json"
+const EXEMPLARS_PATH := "res://data/curriculum/exemplars.json"
+const PUZZLE_TEMPLATES_PATH := "res://data/curriculum/puzzle_templates.json"
 const APP_CONFIG_PATH := "res://data/config/app_config.json"
 const PROGRESSION_NODES_PATH := "res://data/progression/progression_nodes.json"
 
 var concepts_by_id: Dictionary = {}
 var compositions_by_id: Dictionary = {}
 var categories: Array[Dictionary] = []
+var symbols_by_id: Dictionary = {}
+var tracks_by_id: Dictionary = {}
+var tracks: Array[Dictionary] = []
+var exemplars_by_id: Dictionary = {}
+var exemplars_by_symbol_id: Dictionary = {}
+var puzzle_templates_by_id: Dictionary = {}
 var app_config: Dictionary = {}
 var progression_nodes_by_id: Dictionary = {}
 var progression_nodes: Array[Dictionary] = []
@@ -22,6 +32,12 @@ func load_content() -> void:
     concepts_by_id.clear()
     compositions_by_id.clear()
     categories.clear()
+    symbols_by_id.clear()
+    tracks_by_id.clear()
+    tracks.clear()
+    exemplars_by_id.clear()
+    exemplars_by_symbol_id.clear()
+    puzzle_templates_by_id.clear()
     progression_nodes_by_id.clear()
     progression_nodes.clear()
 
@@ -39,9 +55,54 @@ func load_content() -> void:
     for category in categories_doc.get("categories", []):
         categories.append(category)
 
+    var symbols_doc: Dictionary = _load_json(SYMBOLS_PATH)
+    for symbol in symbols_doc.get("symbols", []):
+        var symbol_row: Dictionary = symbol
+        var symbol_id: String = String(symbol_row.get("id", ""))
+        if symbol_id.is_empty():
+            continue
+        symbols_by_id[symbol_id] = symbol_row
+
+    var tracks_doc: Dictionary = _load_json(TRACKS_PATH)
+    for track in tracks_doc.get("tracks", []):
+        var track_row: Dictionary = track
+        var track_id: String = String(track_row.get("id", ""))
+        if track_id.is_empty():
+            continue
+        tracks_by_id[track_id] = track_row
+        tracks.append(track_row)
+    tracks.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+        return int(a.get("sort_order", 0)) < int(b.get("sort_order", 0))
+    )
+
+    var exemplars_doc: Dictionary = _load_json(EXEMPLARS_PATH)
+    for exemplar in exemplars_doc.get("exemplars", []):
+        var exemplar_row: Dictionary = exemplar
+        var exemplar_id: String = String(exemplar_row.get("id", ""))
+        if exemplar_id.is_empty():
+            continue
+        exemplars_by_id[exemplar_id] = exemplar_row
+
+        var symbol_id: String = String(exemplar_row.get("symbol_id", ""))
+        if symbol_id.is_empty():
+            continue
+        if not exemplars_by_symbol_id.has(symbol_id):
+            exemplars_by_symbol_id[symbol_id] = []
+        var exemplar_rows: Array = exemplars_by_symbol_id[symbol_id]
+        exemplar_rows.append(exemplar_row)
+        exemplars_by_symbol_id[symbol_id] = exemplar_rows
+
+    var puzzle_templates_doc: Dictionary = _load_json(PUZZLE_TEMPLATES_PATH)
+    for puzzle_template in puzzle_templates_doc.get("puzzle_templates", []):
+        var template_row: Dictionary = puzzle_template
+        var template_id: String = String(template_row.get("id", ""))
+        if template_id.is_empty():
+            continue
+        puzzle_templates_by_id[template_id] = template_row
+
     var progression_nodes_doc: Dictionary = _load_json(PROGRESSION_NODES_PATH)
     for node_def in progression_nodes_doc.get("nodes", []):
-        var row: Dictionary = node_def
+        var row: Dictionary = _build_progression_node_runtime_row(node_def)
         var node_id: String = String(row.get("node_id", ""))
         if node_id.is_empty():
             continue
@@ -55,15 +116,36 @@ func load_content() -> void:
 
 
 func get_concept(concept_id: String) -> Dictionary:
-    return concepts_by_id.get(concept_id, {}).duplicate(true)
+    var concept: Dictionary = concepts_by_id.get(concept_id, {}).duplicate(true)
+    return _merge_symbol_metadata(concept_id, concept)
 
 
 func get_categories() -> Array[Dictionary]:
     return categories.duplicate(true)
 
 
+func get_symbol(symbol_id: String) -> Dictionary:
+    return symbols_by_id.get(symbol_id, {}).duplicate(true)
+
+
 func get_composition(composition_id: String) -> Dictionary:
     return compositions_by_id.get(composition_id, {}).duplicate(true)
+
+
+func get_track(track_id: String) -> Dictionary:
+    return tracks_by_id.get(track_id, {}).duplicate(true)
+
+
+func get_tracks() -> Array[Dictionary]:
+    return tracks.duplicate(true)
+
+
+func get_exemplar(exemplar_id: String) -> Dictionary:
+    return exemplars_by_id.get(exemplar_id, {}).duplicate(true)
+
+
+func get_puzzle_template(puzzle_template_id: String) -> Dictionary:
+    return puzzle_templates_by_id.get(puzzle_template_id, {}).duplicate(true)
 
 
 func get_progression_node(node_id: String) -> Dictionary:
@@ -119,6 +201,8 @@ func get_unlocked_release_phase(completed_sessions: int) -> int:
 func build_first_playable_session_plan(use_intro: bool, prior_completed_sessions: int) -> Dictionary:
     var active_phase := get_unlocked_release_phase(prior_completed_sessions)
     var round_concepts := _build_phase_round_concepts(active_phase, prior_completed_sessions)
+    var puzzle_template_id := "anchor_phase_1_intro"
+    var puzzle_template := get_puzzle_template(puzzle_template_id)
 
     var rounds: Array[Dictionary] = []
     var candidate_ids := _get_released_candidate_ids(prior_completed_sessions)
@@ -127,10 +211,18 @@ func build_first_playable_session_plan(use_intro: bool, prior_completed_sessions
         var choice_count: int = 3
         if use_intro and prior_completed_sessions == 0 and index < 2:
             choice_count = 2
-        rounds.append(_build_anchor_round_def(concept_id, choice_count, candidate_ids))
+        rounds.append(_decorate_round_def_with_v2_metadata(
+            _build_anchor_round_def(concept_id, choice_count, candidate_ids),
+            puzzle_template_id,
+            puzzle_template,
+            []
+        ))
 
     return {
         "session_id": "first_playable",
+        "session_template_id": puzzle_template_id,
+        "puzzle_template_id": puzzle_template_id,
+        "puzzle_template": puzzle_template.duplicate(true),
         "total_rounds": rounds.size(),
         "rounds": rounds,
     }
@@ -141,6 +233,8 @@ func build_session_plan_for_node(node_id: String, prior_completed_sessions: int)
     if node_def.is_empty():
         return {}
 
+    var puzzle_template_id: String = _resolve_puzzle_template_id(node_def)
+    var puzzle_template: Dictionary = get_puzzle_template(puzzle_template_id)
     var session_ids: Array[String] = _extract_string_array(node_def.get("session_content_ids", []))
     if session_ids.is_empty():
         return {}
@@ -151,40 +245,53 @@ func build_session_plan_for_node(node_id: String, prior_completed_sessions: int)
         1,
         int(node_def.get("session_round_target", app_config.get("session_round_target", 8)))
     )
+    var puzzle_type: String = String(node_def.get("puzzle_type", "anchor_match"))
+    var candidate_ids: Array[String] = _get_released_candidate_ids(prior_completed_sessions)
+    var composition_candidate_ids: Array[String] = _get_released_composition_ids(prior_completed_sessions)
+    var filler_ids := composition_candidate_ids if _puzzle_type_uses_composition_content(puzzle_type) else candidate_ids
     var round_concepts := _build_node_round_concepts(
         session_ids,
         review_ids,
         repeat_ids,
         round_target,
-        prior_completed_sessions
+        prior_completed_sessions,
+        filler_ids
     )
 
-    var candidate_ids: Array[String] = _get_released_candidate_ids(prior_completed_sessions)
     var rounds: Array[Dictionary] = []
     var use_intro_rules := bool(node_def.get("use_intro_rules", false))
     var intro_round_count: int = max(0, int(node_def.get("intro_round_count", 0)))
     var default_choice_count: int = max(2, int(node_def.get("default_choice_count", 3)))
-    var puzzle_type: String = String(node_def.get("puzzle_type", "anchor_match"))
-    var composition_candidate_ids: Array[String] = _get_released_composition_ids(prior_completed_sessions)
+    var node_track_ids: Array[String] = _extract_string_array(node_def.get("track_ids", []))
 
     for index in round_concepts.size():
         var concept_id: String = round_concepts[index]
         var choice_count: int = default_choice_count
         if use_intro_rules and prior_completed_sessions == 0 and index < intro_round_count:
             choice_count = min(choice_count, 2)
-        rounds.append(_build_round_def_for_puzzle_type(
+        var round_def := _build_round_def_for_puzzle_type(
             puzzle_type,
             concept_id,
             choice_count,
             candidate_ids,
             composition_candidate_ids,
             index
+        )
+        rounds.append(_decorate_round_def_with_v2_metadata(
+            round_def,
+            puzzle_template_id,
+            puzzle_template,
+            node_track_ids
         ))
 
     return {
         "session_id": node_id,
         "node_id": node_id,
         "session_template_id": String(node_def.get("session_template_id", "")),
+        "puzzle_template_id": puzzle_template_id,
+        "puzzle_template": puzzle_template.duplicate(true),
+        "track_id": String(node_def.get("track_id", "")),
+        "track_ids": node_track_ids.duplicate(),
         "total_rounds": rounds.size(),
         "rounds": rounds,
     }
@@ -200,6 +307,8 @@ func _build_round_def_for_puzzle_type(
 ) -> Dictionary:
     if puzzle_type == "reverse_anchor_match":
         return _build_reverse_anchor_round_def(concept_id, choice_count, candidate_ids)
+    if puzzle_type == "quality_anchor_match":
+        return _build_quality_anchor_round_def(concept_id, choice_count, composition_candidate_ids)
     if puzzle_type == "pair_completion":
         return _build_pair_completion_round_def(concept_id, choice_count, composition_candidate_ids, round_index)
     return _build_anchor_round_def(concept_id, choice_count, candidate_ids)
@@ -207,6 +316,7 @@ func _build_round_def_for_puzzle_type(
 
 func _build_anchor_round_def(concept_id: String, choice_count: int, candidate_ids: Array[String]) -> Dictionary:
     var correct_concept: Dictionary = get_concept(concept_id)
+    var target_exemplar: Dictionary = _get_preferred_exemplar_for_symbol(concept_id, "anchor_match")
     var distractor_ids: Array[String] = []
     for candidate in candidate_ids:
         if candidate == concept_id:
@@ -231,7 +341,12 @@ func _build_anchor_round_def(concept_id: String, choice_count: int, candidate_id
     return {
         "puzzle_type": "anchor_match",
         "concept_id": concept_id,
-        "target_asset_path": String(correct_concept.get("picture_asset", "")),
+        "target_symbol_id": concept_id,
+        "target_exemplar_id": String(target_exemplar.get("id", "")),
+        "target_asset_path": _resolve_exemplar_asset_path(
+            target_exemplar,
+            String(correct_concept.get("picture_asset", ""))
+        ),
         "target_content_kind": "picture",
         "correct_choice_asset_path": String(correct_concept.get("symbol_asset", "")),
         "choice_content_kind": "symbol",
@@ -244,6 +359,10 @@ func _build_anchor_round_def(concept_id: String, choice_count: int, candidate_id
 
 func _build_reverse_anchor_round_def(concept_id: String, choice_count: int, candidate_ids: Array[String]) -> Dictionary:
     var correct_concept: Dictionary = get_concept(concept_id)
+    var correct_choice_exemplar: Dictionary = _get_preferred_exemplar_for_symbol(
+        concept_id,
+        "reverse_anchor_match"
+    )
     var distractor_ids: Array[String] = []
     for candidate in candidate_ids:
         if candidate == concept_id:
@@ -253,29 +372,93 @@ func _build_reverse_anchor_round_def(concept_id: String, choice_count: int, cand
     var choices: Array[Dictionary] = []
     choices.append({
         "id": concept_id,
-        "asset_path": String(correct_concept.get("picture_asset", "")),
+        "asset_path": _resolve_exemplar_asset_path(
+            correct_choice_exemplar,
+            String(correct_concept.get("picture_asset", ""))
+        ),
+        "exemplar_id": String(correct_choice_exemplar.get("id", "")),
     })
 
     var distractor_count: int = max(choice_count - 1, 0)
     for i in min(distractor_count, distractor_ids.size()):
         var distractor_id: String = distractor_ids[i]
         var distractor_concept: Dictionary = get_concept(distractor_id)
+        var distractor_exemplar: Dictionary = _get_preferred_exemplar_for_symbol(
+            distractor_id,
+            "reverse_anchor_match"
+        )
         choices.append({
             "id": distractor_id,
-            "asset_path": String(distractor_concept.get("picture_asset", "")),
+            "asset_path": _resolve_exemplar_asset_path(
+                distractor_exemplar,
+                String(distractor_concept.get("picture_asset", ""))
+            ),
+            "exemplar_id": String(distractor_exemplar.get("id", "")),
         })
 
     return {
         "puzzle_type": "reverse_anchor_match",
         "concept_id": concept_id,
+        "target_symbol_id": concept_id,
         "target_asset_path": String(correct_concept.get("symbol_asset", "")),
         "target_content_kind": "symbol",
-        "correct_choice_asset_path": String(correct_concept.get("picture_asset", "")),
+        "correct_choice_exemplar_id": String(correct_choice_exemplar.get("id", "")),
+        "correct_choice_asset_path": _resolve_exemplar_asset_path(
+            correct_choice_exemplar,
+            String(correct_concept.get("picture_asset", ""))
+        ),
         "choice_content_kind": "picture",
         "choice_count": choices.size(),
         "correct_choice_id": concept_id,
         "choices": choices,
         "max_wrong_attempts_before_support": 2,
+    }
+
+
+func _build_quality_anchor_round_def(
+    composition_id: String,
+    choice_count: int,
+    composition_candidate_ids: Array[String]
+) -> Dictionary:
+    var composition: Dictionary = get_composition(composition_id)
+    if composition.is_empty():
+        return {}
+
+    var modifier_id: String = String(composition.get("modifier_id", ""))
+    var modifier_symbol: Dictionary = get_symbol(modifier_id)
+    var result_exemplar_id: String = String(composition.get("result_exemplar_id", ""))
+    var quality_prompt_exemplar_id: String = String(
+        composition.get("quality_prompt_exemplar_id", result_exemplar_id)
+    )
+    var quality_prompt_exemplar: Dictionary = get_exemplar(quality_prompt_exemplar_id)
+    var modifier_asset: String = String(composition.get("modifier_symbol_asset", ""))
+    if modifier_asset.is_empty():
+        modifier_asset = String(modifier_symbol.get("bliss_symbol_asset", ""))
+
+    return {
+        "puzzle_type": "quality_anchor_match",
+        "composition_id": composition_id,
+        "concept_id": modifier_id,
+        "target_symbol_id": modifier_id,
+        "target_exemplar_id": quality_prompt_exemplar_id,
+        "target_asset_path": _resolve_exemplar_asset_path(
+            quality_prompt_exemplar,
+            String(composition.get("result_picture_asset", ""))
+        ),
+        "target_picture_scale": float(
+            quality_prompt_exemplar.get("visual_scale", composition.get("result_picture_scale", 0.72))
+        ),
+        "target_content_kind": "picture",
+        "correct_choice_asset_path": modifier_asset,
+        "choice_content_kind": "symbol",
+        "choice_count": min(choice_count, 2),
+        "correct_choice_id": modifier_id,
+        "choices": _build_modifier_symbol_choices(
+            modifier_id,
+            min(choice_count, 2),
+            composition_candidate_ids
+        ),
+        "max_wrong_attempts_before_support": 1,
     }
 
 
@@ -289,6 +472,8 @@ func _build_pair_completion_round_def(
     if composition.is_empty():
         return {}
 
+    var result_exemplar_id: String = String(composition.get("result_exemplar_id", ""))
+    var result_exemplar: Dictionary = get_exemplar(result_exemplar_id)
     var base_concept_id: String = String(composition.get("base_concept_id", ""))
     var base_concept: Dictionary = get_concept(base_concept_id)
     var modifier_id: String = String(composition.get("modifier_id", ""))
@@ -346,7 +531,12 @@ func _build_pair_completion_round_def(
         "puzzle_type": "pair_completion",
         "composition_id": composition_id,
         "concept_id": base_concept_id,
-        "result_asset_path": String(composition.get("result_picture_asset", "")),
+        "target_symbol_id": base_concept_id,
+        "target_exemplar_id": result_exemplar_id,
+        "result_asset_path": _resolve_exemplar_asset_path(
+            result_exemplar,
+            String(composition.get("result_picture_asset", ""))
+        ),
         "result_picture_scale": float(composition.get("result_picture_scale", 0.72)),
         "choice_content_kind": "symbol",
         "formula_slots": formula_slots,
@@ -425,6 +615,227 @@ func _build_noun_symbol_choices(
     return choices
 
 
+func _decorate_round_def_with_v2_metadata(
+    round_def: Dictionary,
+    puzzle_template_id: String,
+    puzzle_template: Dictionary,
+    node_track_ids: Array[String]
+) -> Dictionary:
+    if round_def.is_empty():
+        return {}
+
+    var decorated := round_def.duplicate(true)
+    decorated["puzzle_template_id"] = puzzle_template_id
+    if not puzzle_template.is_empty():
+        decorated["puzzle_template"] = puzzle_template.duplicate(true)
+    if not node_track_ids.is_empty():
+        decorated["track_ids"] = node_track_ids.duplicate()
+    return decorated
+
+
+func _build_progression_node_runtime_row(node_def: Dictionary) -> Dictionary:
+    var row: Dictionary = node_def.duplicate(true)
+    var puzzle_template_id: String = _resolve_puzzle_template_id(row)
+    if not puzzle_template_id.is_empty():
+        row["puzzle_template_id"] = puzzle_template_id
+        var puzzle_template: Dictionary = get_puzzle_template(puzzle_template_id)
+        if not puzzle_template.is_empty():
+            row["puzzle_template"] = puzzle_template
+
+    var session_ids: Array[String] = _extract_string_array(row.get("session_content_ids", []))
+    var review_ids: Array[String] = _extract_string_array(row.get("review_ids", []))
+    var repeat_ids: Array[String] = _extract_string_array(row.get("repeat_ids", []))
+    var puzzle_type: String = String(row.get("puzzle_type", "anchor_match"))
+
+    if puzzle_type == "pair_completion":
+        row["focus_composition_ids"] = session_ids.duplicate()
+        row["repeat_composition_ids"] = repeat_ids.duplicate()
+        row["focus_symbol_ids"] = _collect_member_symbol_ids_from_compositions(session_ids)
+        row["review_symbol_ids"] = _collect_member_symbol_ids_from_compositions(review_ids)
+        row["repeat_symbol_ids"] = _collect_member_symbol_ids_from_compositions(repeat_ids)
+    elif puzzle_type == "quality_anchor_match":
+        row["focus_composition_ids"] = session_ids.duplicate()
+        row["repeat_composition_ids"] = repeat_ids.duplicate()
+        row["focus_symbol_ids"] = _collect_modifier_symbol_ids_from_compositions(session_ids)
+        row["review_symbol_ids"] = _collect_modifier_symbol_ids_from_compositions(review_ids)
+        row["repeat_symbol_ids"] = _collect_modifier_symbol_ids_from_compositions(repeat_ids)
+    else:
+        row["focus_symbol_ids"] = session_ids.duplicate()
+        row["review_symbol_ids"] = review_ids.duplicate()
+        row["repeat_symbol_ids"] = repeat_ids.duplicate()
+
+    var explicit_track_ids: Array[String] = _extract_string_array(row.get("track_ids", []))
+    var track_ids: Array[String] = _collect_track_ids_for_node_content(
+        session_ids,
+        review_ids,
+        repeat_ids,
+        puzzle_type
+    )
+    if not explicit_track_ids.is_empty():
+        row["track_ids"] = explicit_track_ids.duplicate()
+    elif not track_ids.is_empty():
+        row["track_ids"] = track_ids.duplicate()
+
+    var explicit_track_id: String = String(row.get("track_id", ""))
+    var resolved_track_ids: Array[String] = _extract_string_array(row.get("track_ids", []))
+    if explicit_track_id.is_empty() and resolved_track_ids.size() == 1:
+        row["track_id"] = resolved_track_ids[0]
+
+    var allowed_exemplar_group_ids: Array[String] = _collect_allowed_exemplar_group_ids(
+        session_ids,
+        review_ids,
+        repeat_ids,
+        puzzle_type
+    )
+    if not allowed_exemplar_group_ids.is_empty():
+        row["allowed_exemplar_group_ids"] = allowed_exemplar_group_ids
+
+    return row
+
+
+func _resolve_puzzle_template_id(row: Dictionary) -> String:
+    var puzzle_template_id: String = String(row.get("puzzle_template_id", ""))
+    if not puzzle_template_id.is_empty():
+        return puzzle_template_id
+    return String(row.get("session_template_id", ""))
+
+
+func _merge_symbol_metadata(content_id: String, row: Dictionary) -> Dictionary:
+    var merged: Dictionary = row.duplicate(true)
+    var symbol: Dictionary = get_symbol(content_id)
+    if symbol.is_empty():
+        return merged
+
+    for key in symbol.keys():
+        if not merged.has(key):
+            merged[key] = symbol[key]
+    if String(merged.get("symbol_asset", "")).is_empty():
+        merged["symbol_asset"] = String(symbol.get("bliss_symbol_asset", ""))
+    return merged
+
+
+func _get_preferred_exemplar_for_symbol(symbol_id: String, puzzle_type: String) -> Dictionary:
+    var exemplar_rows: Array = exemplars_by_symbol_id.get(symbol_id, [])
+    var fallback: Dictionary = {}
+
+    for raw_row in exemplar_rows:
+        if typeof(raw_row) != TYPE_DICTIONARY:
+            continue
+        var row: Dictionary = raw_row
+        if not bool(row.get("enabled", true)):
+            continue
+        if fallback.is_empty():
+            fallback = row
+        var supported_puzzle_types: Array[String] = _extract_string_array(
+            row.get("supports_puzzle_types", [])
+        )
+        if not supported_puzzle_types.has(puzzle_type):
+            continue
+        if String(row.get("salience_level", "")) == "primary":
+            return row.duplicate(true)
+        if fallback.is_empty():
+            fallback = row
+
+    return fallback.duplicate(true)
+
+
+func _resolve_exemplar_asset_path(exemplar: Dictionary, fallback_asset_path: String) -> String:
+    var exemplar_asset_path: String = String(exemplar.get("asset_path", ""))
+    if exemplar_asset_path.is_empty():
+        return fallback_asset_path
+    return exemplar_asset_path
+
+
+func _collect_track_ids_for_node_content(
+    session_ids: Array[String],
+    review_ids: Array[String],
+    repeat_ids: Array[String],
+    puzzle_type: String
+) -> Array[String]:
+    var out: Array[String] = []
+    var seen: Dictionary = {}
+    var all_ids: Array[String] = []
+    all_ids.append_array(session_ids)
+    all_ids.append_array(review_ids)
+    all_ids.append_array(repeat_ids)
+
+    for content_id in all_ids:
+        var source_row: Dictionary = {}
+        if _puzzle_type_uses_composition_content(puzzle_type):
+            source_row = get_composition(content_id)
+        else:
+            source_row = get_symbol(content_id)
+        for track_id in _extract_string_array(source_row.get("default_track_ids", [])):
+            if seen.has(track_id):
+                continue
+            seen[track_id] = true
+            out.append(track_id)
+    return out
+
+
+func _collect_member_symbol_ids_from_compositions(composition_ids: Array[String]) -> Array[String]:
+    var out: Array[String] = []
+    var seen: Dictionary = {}
+    for composition_id in composition_ids:
+        var composition: Dictionary = get_composition(composition_id)
+        for symbol_id in _extract_string_array(composition.get("member_symbol_ids", [])):
+            if seen.has(symbol_id):
+                continue
+            seen[symbol_id] = true
+            out.append(symbol_id)
+    return out
+
+
+func _collect_modifier_symbol_ids_from_compositions(composition_ids: Array[String]) -> Array[String]:
+    var out: Array[String] = []
+    var seen: Dictionary = {}
+    for composition_id in composition_ids:
+        var composition: Dictionary = get_composition(composition_id)
+        var modifier_id: String = String(composition.get("modifier_id", ""))
+        if modifier_id.is_empty() or seen.has(modifier_id):
+            continue
+        seen[modifier_id] = true
+        out.append(modifier_id)
+    return out
+
+
+func _collect_allowed_exemplar_group_ids(
+    session_ids: Array[String],
+    review_ids: Array[String],
+    repeat_ids: Array[String],
+    puzzle_type: String
+) -> Array[String]:
+    var out: Array[String] = []
+    var seen: Dictionary = {}
+    var all_ids: Array[String] = []
+    all_ids.append_array(session_ids)
+    all_ids.append_array(review_ids)
+    all_ids.append_array(repeat_ids)
+
+    if _puzzle_type_uses_composition_content(puzzle_type):
+        for composition_id in all_ids:
+            var composition: Dictionary = get_composition(composition_id)
+            var exemplar_id: String = String(composition.get("result_exemplar_id", ""))
+            if puzzle_type == "quality_anchor_match":
+                exemplar_id = String(composition.get("quality_prompt_exemplar_id", exemplar_id))
+            var exemplar: Dictionary = get_exemplar(exemplar_id)
+            var variant_group_id: String = String(exemplar.get("variant_group_id", ""))
+            if variant_group_id.is_empty() or seen.has(variant_group_id):
+                continue
+            seen[variant_group_id] = true
+            out.append(variant_group_id)
+        return out
+
+    for symbol_id in all_ids:
+        var exemplar: Dictionary = _get_preferred_exemplar_for_symbol(symbol_id, puzzle_type)
+        var variant_group_id: String = String(exemplar.get("variant_group_id", ""))
+        if variant_group_id.is_empty() or seen.has(variant_group_id):
+            continue
+        seen[variant_group_id] = true
+        out.append(variant_group_id)
+    return out
+
+
 func _build_phase_round_concepts(active_phase: int, prior_completed_sessions: int) -> Array[String]:
     var target_round_count: int = max(1, int(app_config.get("session_round_target", 8)))
     var session_ids: Array[String] = _get_phase_id_list(active_phase, "session_ids")
@@ -462,7 +873,8 @@ func _build_node_round_concepts(
     review_ids: Array[String],
     repeat_ids: Array[String],
     target_round_count: int,
-    prior_completed_sessions: int
+    prior_completed_sessions: int,
+    filler_ids: Array[String] = []
 ) -> Array[String]:
     var reserved_slots: int = min(target_round_count, review_ids.size() + repeat_ids.size())
     var primary_slots: int = max(target_round_count - reserved_slots, 0)
@@ -478,8 +890,10 @@ func _build_node_round_concepts(
     round_concepts.append_array(repeat_ids)
 
     if round_concepts.size() < target_round_count:
-        var filler_ids: Array[String] = _get_released_candidate_ids(prior_completed_sessions)
-        for concept_id in filler_ids:
+        var fallback_ids: Array[String] = filler_ids
+        if fallback_ids.is_empty():
+            fallback_ids = _get_released_candidate_ids(prior_completed_sessions)
+        for concept_id in fallback_ids:
             if round_concepts.size() >= target_round_count:
                 break
             if round_concepts.has(concept_id):
@@ -580,6 +994,10 @@ func _get_released_composition_ids(completed_sessions: int) -> Array[String]:
         out.append(normalized_id)
     out.sort()
     return out
+
+
+func _puzzle_type_uses_composition_content(puzzle_type: String) -> bool:
+    return puzzle_type == "pair_completion" or puzzle_type == "quality_anchor_match"
 
 
 func _load_json(path: String) -> Dictionary:

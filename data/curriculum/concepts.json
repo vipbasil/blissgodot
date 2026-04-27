@@ -140,6 +140,76 @@
 			"symbol_asset": "res://assets/bliss_symbols/duck.png",
 			"picture_asset": "res://assets/pictures/duck.png",
 			"enabled": true
+		},
+		{
+			"id": "hand",
+			"category_id": "body_parts",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match", "reverse_anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/hand.png",
+			"picture_asset": "res://assets/pictures/hand.png",
+			"enabled": true
+		},
+		{
+			"id": "eye",
+			"category_id": "body_parts",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match", "reverse_anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/eye.png",
+			"picture_asset": "res://assets/pictures/eye.png",
+			"enabled": true
+		},
+		{
+			"id": "mouth",
+			"category_id": "body_parts",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match", "reverse_anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/mouth.png",
+			"picture_asset": "res://assets/pictures/mouth.png",
+			"enabled": true
+		},
+		{
+			"id": "nose",
+			"category_id": "body_parts",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match", "reverse_anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/nose.png",
+			"picture_asset": "res://assets/pictures/nose.png",
+			"enabled": true
+		},
+		{
+			"id": "ear",
+			"category_id": "body_parts",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match", "reverse_anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/ear.png",
+			"picture_asset": "res://assets/pictures/ear.png",
+			"enabled": true
+		},
+		{
+			"id": "head",
+			"category_id": "body_parts",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match", "reverse_anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/head.png",
+			"picture_asset": "res://assets/pictures/head.png",
+			"enabled": true
+		},
+		{
+			"id": "arm",
+			"category_id": "body_parts",
+			"release_phase": 2,
+			"progression_band_start": "band_a",
+			"default_puzzle_types": ["anchor_match", "reverse_anchor_match"],
+			"symbol_asset": "res://assets/bliss_symbols/arm.png",
+			"picture_asset": "res://assets/pictures/arm.png",
+			"enabled": true
 		}
 	]
 }

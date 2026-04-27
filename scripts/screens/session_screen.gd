@@ -85,6 +85,8 @@ func _get_puzzle_scene(puzzle_type: String) -> PackedScene:
     match puzzle_type:
         "anchor_match":
             return ANCHOR_MATCH_SCENE
+        "quality_anchor_match":
+            return ANCHOR_MATCH_SCENE
         "reverse_anchor_match":
             return REVERSE_ANCHOR_MATCH_SCENE
         "pair_completion":
@@ -95,12 +97,13 @@ func _get_puzzle_scene(puzzle_type: String) -> PackedScene:
 
 func _build_scene_round_def(round_def: Dictionary) -> Dictionary:
     var puzzle_type: String = String(round_def.get("puzzle_type", "anchor_match"))
-    if puzzle_type != "anchor_match":
+    if puzzle_type != "anchor_match" and puzzle_type != "quality_anchor_match":
         return round_def
 
     var scene_round := round_def.duplicate(true)
     scene_round["target_picture_asset"] = String(round_def.get("target_asset_path", ""))
     scene_round["correct_symbol_asset"] = String(round_def.get("correct_choice_asset_path", ""))
+    scene_round["target_picture_scale"] = float(round_def.get("target_picture_scale", 1.0))
 
     var legacy_choices: Array[Dictionary] = []
     for choice in round_def.get("choices", []):

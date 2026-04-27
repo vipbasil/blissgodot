@@ -16,6 +16,7 @@ const SCREEN_SCENES := {
 var current_screen: Control
 var main_progress_flow_provider := MainProgressFlowProviderScript.new()
 var pending_session_summary: Dictionary = {}
+var active_session_context: Dictionary = {}
 
 
 func _ready() -> void:
@@ -49,6 +50,7 @@ func navigate_to(screen_id: String, payload: Dictionary = {}) -> void:
 func _on_screen_navigate_requested(screen_id: String, payload: Dictionary = {}) -> void:
     if screen_id == "session_summary":
         pending_session_summary = payload.duplicate(true)
+        pending_session_summary["session_context"] = active_session_context.duplicate(true)
         navigate_to("session_summary", payload)
         return
 
@@ -80,6 +82,13 @@ func _build_session_payload(payload: Dictionary) -> Dictionary:
         push_warning("Missing session plan for node: %s" % node_id)
         return {}
 
+    active_session_context = {
+        "session_run_id": _build_session_run_id(node_id),
+        "started_at": str(int(Time.get_unix_time_from_system())),
+        "node_id": node_id,
+        "session_plan": session_plan.duplicate(true),
+    }
+
     return {
         "node_id": node_id,
         "session_plan": session_plan,
@@ -89,12 +98,13 @@ func _build_session_payload(payload: Dictionary) -> Dictionary:
 func _commit_pending_session_summary() -> void:
     var node_id: String = String(pending_session_summary.get("node_id", ""))
     var results: Array[Dictionary] = _extract_results_array(pending_session_summary.get("results", []))
+    var session_context: Dictionary = pending_session_summary.get("session_context", {}).duplicate(true)
 
     if not node_id.is_empty():
-        AppState.record_session_results(results)
-        AppState.record_completed_node(node_id)
+        AppState.commit_session_summary(node_id, results, session_context)
 
     pending_session_summary.clear()
+    active_session_context.clear()
     navigate_to("main_progress", {
         "just_completed_node_id": node_id,
     })
@@ -110,3 +120,7 @@ func _extract_results_array(raw_results: Variant) -> Array[Dictionary]:
             continue
         out.append((raw_entry as Dictionary).duplicate(true))
     return out
+
+
+func _build_session_run_id(node_id: String) -> String:
+    return "%s_%d" % [node_id, Time.get_ticks_usec()]

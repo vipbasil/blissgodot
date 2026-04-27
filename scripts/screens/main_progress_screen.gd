@@ -89,7 +89,7 @@ func _update_path_layout() -> void:
 		button.size = Vector2.ONE * diameter
 		button.position = center - (button.size * 0.5)
 		button.pivot_offset = button.size * 0.5
-		button.text = str(int(node.get("sort_order", index + 1)))
+		button.text = str(int(node.get("display_order", index + 1)))
 		_apply_node_style(button, node, is_focused)
 		path_line.add_point(center)
 

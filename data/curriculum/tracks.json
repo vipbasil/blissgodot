@@ -1,0 +1,100 @@
+{
+	"schema_version": 1,
+	"tracks": [
+		{
+			"id": "food_nouns_intro",
+			"display_name": "Food Nouns Intro",
+			"category_id": "food",
+			"role_focus": "noun",
+			"sort_order": 1,
+			"release_phase": 1,
+			"prerequisite_track_ids": [],
+			"enabled": true,
+			"starter_symbol_ids": ["apple", "water"],
+			"expansion_batches": [["banana", "bread", "cup", "bottle"]],
+			"default_puzzle_template_ids": ["anchor_phase_1_intro", "reverse_anchor_phase_1_intro", "anchor_phase_2_intro"],
+			"mastery_gate_profile": "phase_1_noun_intro"
+		},
+		{
+			"id": "objects_nouns_intro",
+			"display_name": "Objects Nouns Intro",
+			"category_id": "objects",
+			"role_focus": "noun",
+			"sort_order": 2,
+			"release_phase": 1,
+			"prerequisite_track_ids": [],
+			"enabled": true,
+			"starter_symbol_ids": ["ball", "book"],
+			"expansion_batches": [["bed", "toy"]],
+			"default_puzzle_template_ids": ["anchor_phase_1_review", "reverse_anchor_phase_1_intro", "anchor_phase_2_intro"],
+			"mastery_gate_profile": "phase_1_noun_intro"
+		},
+		{
+			"id": "animals_nouns_intro",
+			"display_name": "Animals Nouns Intro",
+			"category_id": "animals",
+			"role_focus": "noun",
+			"sort_order": 3,
+			"release_phase": 1,
+			"prerequisite_track_ids": [],
+			"enabled": true,
+			"starter_symbol_ids": ["dog", "cat"],
+			"expansion_batches": [["bird", "duck"]],
+			"default_puzzle_template_ids": ["anchor_phase_1_animals", "reverse_anchor_phase_1_intro", "anchor_phase_2_mixed"],
+			"mastery_gate_profile": "phase_1_noun_intro"
+		},
+		{
+			"id": "body_parts_nouns_intro",
+			"display_name": "Body Parts Nouns Intro",
+			"category_id": "body_parts",
+			"role_focus": "noun",
+			"sort_order": 4,
+			"release_phase": 2,
+			"prerequisite_track_ids": [],
+			"enabled": true,
+			"starter_symbol_ids": ["hand", "eye", "mouth", "nose"],
+			"expansion_batches": [["ear", "head", "arm"]],
+			"default_puzzle_template_ids": ["anchor_phase_2_body_parts", "reverse_anchor_phase_1_intro"],
+			"mastery_gate_profile": "phase_1_noun_intro"
+		},
+		{
+			"id": "size_qualities_intro",
+			"display_name": "Size Qualities Intro",
+			"category_id": "qualities",
+			"role_focus": "adjective",
+			"sort_order": 5,
+			"release_phase": 1,
+			"prerequisite_track_ids": [],
+			"enabled": true,
+			"starter_symbol_ids": ["small", "big"],
+			"default_puzzle_template_ids": ["anchor_quality_phase_1_intro"],
+			"mastery_gate_profile": "phase_1_quality_intro"
+		},
+		{
+			"id": "size_qualities_on_food",
+			"display_name": "Size Qualities On Food",
+			"category_id": "food",
+			"role_focus": "composition",
+			"sort_order": 6,
+			"release_phase": 1,
+			"prerequisite_track_ids": ["food_nouns_intro", "size_qualities_intro"],
+			"enabled": true,
+			"starter_symbol_ids": ["small", "big", "apple"],
+			"default_puzzle_template_ids": ["pair_phase_1_intro"],
+			"mastery_gate_profile": "phase_1_composition_intro"
+		},
+		{
+			"id": "size_qualities_on_objects",
+			"display_name": "Size Qualities On Objects",
+			"category_id": "objects",
+			"role_focus": "composition",
+			"sort_order": 7,
+			"release_phase": 1,
+			"prerequisite_track_ids": ["objects_nouns_intro", "size_qualities_intro"],
+			"enabled": true,
+			"starter_symbol_ids": ["small", "big", "ball"],
+			"default_puzzle_template_ids": ["pair_phase_1_intro"],
+			"mastery_gate_profile": "phase_1_composition_intro"
+		}
+	]
+}

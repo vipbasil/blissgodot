@@ -6,17 +6,26 @@ extends PanelContainer
 @onready var fallback_caption: Label = %FallbackCaption
 @onready var placed_card_anchor: Control = %PlacedCardAnchor
 
+const BASE_TEXTURE_SIZE := Vector2(320, 320)
+
 var current_concept_id := ""
 var current_asset_path := ""
 var current_content_kind := "picture"
+var current_visual_scale := 1.0
 var expected_choice_id := ""
 var is_filled := false
 
 
-func set_content(concept_id: String, asset_path: String, content_kind: String = "picture") -> void:
+func set_content(
+	concept_id: String,
+	asset_path: String,
+	content_kind: String = "picture",
+	visual_scale: float = 1.0
+) -> void:
 	current_concept_id = concept_id
 	current_asset_path = asset_path
 	current_content_kind = _normalize_content_kind(content_kind)
+	current_visual_scale = clampf(visual_scale, 0.35, 1.0)
 	if not is_node_ready():
 		return
 
@@ -25,6 +34,7 @@ func set_content(concept_id: String, asset_path: String, content_kind: String = 
 		texture = load(current_asset_path) as Texture2D
 
 	texture_rect.texture = texture
+	texture_rect.custom_minimum_size = BASE_TEXTURE_SIZE * current_visual_scale
 	texture_rect.visible = texture != null
 	fallback_frame.visible = texture == null
 	fallback_glyph.text = _build_fallback_glyph(current_concept_id)
@@ -49,7 +59,7 @@ func set_filled(_choice_id: String, _asset_path: String = "", _content_kind: Str
 
 
 func _ready() -> void:
-	set_content(current_concept_id, current_asset_path, current_content_kind)
+	set_content(current_concept_id, current_asset_path, current_content_kind, current_visual_scale)
 
 
 func set_drag_target_ready(is_ready: bool) -> void:

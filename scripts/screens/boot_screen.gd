@@ -9,6 +9,7 @@ func _ready() -> void:
 
 func _bootstrap() -> void:
     ContentDB.load_content()
+    LearningStoreService.initialize()
     AppState.load_from_disk()
     await get_tree().process_frame
     navigate_requested.emit("home", {})

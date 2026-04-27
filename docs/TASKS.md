@@ -15,10 +15,22 @@ Agents should keep it current.
 
 ## Todo
 
-- Run a focused child-flow QA pass covering both `Reverse Anchor Match` and `Pair Completion`.
+- Import the legacy V1 progression into the live V2 SQLite store.
+  Execution owner: `godot worker agent`
+  Scope: seed the real `bliss_v2.sqlite` tables from `save_v1.json` without claiming fake puzzle-level history and keep the bridge additive.
+- Route session and round writes into the live V2 SQLite tables.
+  Execution owner: `gameplay/data worker agent`
+  Scope: write `session_run`, `round_result`, and `node_progress` at the current summary-commit seam while preserving the existing child flow.
+- Land the first runtime V2 store slice after the authored-content normalization review.
+  Execution owner: `godot worker agent`
+  Scope: add the learning-store service boundary, thin `save_v2` shell handling, and migration scaffolding without yet rewriting puzzle screens.
+- Resolve the authored V2 category-gap before runtime readers depend on it.
+  Execution owner: `content agent`
+  Scope: align the new `qualities` references in V2-authored files with the canonical category model at the moment the runtime begins reading those files.
+- Rerun the focused child-flow QA pass covering both `Reverse Anchor Match` and `Pair Completion` after the current data-model routing settles.
   Execution owner: `qa agent`
   Scope: validate drag return, wrong-answer simplification, supported-success completion, and progression handoff through `phase_1_reverse_01` and `phase_1_pair_01`.
-- Route `Odd One Out` as the next approved symbol-first puzzle brief after the combined reverse/pair QA pass.
+- Route `Odd One Out` only after the V2 data-model rollout no longer risks immediate curriculum/schema rework.
 - Run `MainProgressScreen` Phase 5 integration QA for post-summary reveal, restart persistence, replay stability, and release-phase visibility.
 - Run the dedicated `Anchor Match` physical-drag QA checklist interactively and on target touch input.
 - Align exact star thresholds and learned/mastered thresholds after first-playable validation.
@@ -33,7 +45,10 @@ Agents should keep it current.
   Scope: keep Android export treated as solved for project-code purposes, reflect the user pivot toward symbol-first puzzle expansion, and route the next implementation slice without reopening solved export work.
 - `Second puzzle-family direction`
   Execution owner: `lead agent`
-  Scope: keep `Reverse Anchor Match` and `Pair Completion` integrated and reviewed, then route `Odd One Out` as the next approved implementation slice unless a stronger implementation constraint appears.
+  Scope: keep `Reverse Anchor Match` and `Pair Completion` integrated and reviewed, but hold `Odd One Out` behind the V2 data-model rollout so the next puzzle slice does not harden the wrong curriculum/runtime shape.
+- `Bliss Data Model V2 rollout`
+  Execution owner: `lead agent`
+  Scope: review the approved `docs/DATA_MODEL_V2_ARCHITECTURE.md` brief, route the first non-overlapping implementation slices, and keep the migration additive so current IDs, authored content, and shipped puzzle behavior do not get destructively rewritten.
 
 ## Done
 
@@ -58,6 +73,27 @@ Agents should keep it current.
 - `Godot Android editor-settings inspection`
   Execution owner: `godot explorer agent`
   Scope: verified that the failing Godot `4.6.1` app was reading `editor_settings-4.6.tres`, populated that file with the Android SDK and JDK 17 paths, removed Gradle-only Android preset overrides that are invalid when Gradle build is off, and reran headless export successfully.
+- `Bliss Data Model V2 architecture`
+  Execution owner: `architect agent`
+  Scope: approved `hybrid JSON + SQLite` with authored curriculum staying in `res://data/`, runtime learning truth moving to `user://bliss_v2.sqlite`, a thin `save_v2.json` shell, explicit exemplar-based abstraction modeling, track-first progression, and additive migration from the current `concepts.json` plus `save_v1.json` shape.
+- `Bliss Data Model V2 authored-content normalization`
+  Execution owner: `content worker agent`
+  Scope: added `symbols.json`, `tracks.json`, `exemplars.json`, and `puzzle_templates.json`, and enriched `compositions.json` additively while preserving current runtime-facing fields; this slice is valid on disk but not runtime-active yet because current code still reads the V1 content files only.
+- `Bliss Data Model V2 runtime dependency and DB seam`
+  Execution owner: `godot worker agent`
+  Scope: installed the `godot-sqlite` addon under `addons/godot-sqlite`, introduced the `LearningStoreService` runtime seam, created and normalized `save_v2.json`, and now creates the live `user://bliss_v2.sqlite` database plus the initial V2 schema tables while leaving `save_v1.json` as the current gameplay compatibility truth.
+- `Body Parts` starter track import
+  Execution owner: `lead agent`
+  Scope: imported the first real `body_parts` assets (`hand`, `eye`, `mouth`, `nose`) from the old reference repo, added the `body_parts` category plus V1/V2 authored rows, and inserted a reachable `phase_2_body_parts_01` anchor session ahead of the existing phase-2 mixed expansion.
+- `Body Parts` reverse follow-up
+  Execution owner: `lead agent`
+  Scope: extended the new `body_parts` track with a real `phase_2_body_parts_02` reverse session so the category now follows the approved anchor-then-reverse depth pattern before broader phase-2 expansion resumes.
+- `MainProgressScreen` visible-path compaction
+  Execution owner: `lead agent`
+  Scope: changed the visible node model to be puzzle-family-first instead of content-batch-first, kept completed nodes visible longer after completion, and updated numbering so the path no longer floods the child with near-duplicate puzzle nodes.
+- `Body Parts` second batch rollout
+  Execution owner: `lead agent`
+  Scope: imported `ear`, `head`, and `arm`, then made them runtime-reachable by adding explicit `phase_2_body_parts_03` and `phase_2_body_parts_04` progression nodes after content-only staging proved insufficient.
 - Produced a UI/UX design-only spec for `MainProgressScreen` in `docs/MAIN_PROGRESS_SCREEN_UI.md`, adapting the MITA path structure to Bliss while keeping the child flow calm and text-light.
 - Created the project-local memory system, shared knowledge base, role files, worklogs, and dedicated role skills.
 - Added BA agent support and explicit orchestration rules for BA, lead, and specialist routing.
@@ -102,8 +138,6 @@ Agents should keep it current.
 - Recorded the puzzle-system direction that Bliss should prioritize symbol-first puzzle families, treat `Pair Completion` as symbol composition, and build next toward `Reverse Anchor Match`, `Composition Line`, `Odd One Out`, `Category Sort`, and `Sequence Ordering`.
 
 ## Blocked
-
-- None currently.
 
 ## Open Questions
 

@@ -1,7 +1,5 @@
 extends Node
 
-const SAVE_PATH := "user://save_v1.json"
-
 var save_data: Dictionary = {}
 
 
@@ -37,13 +35,25 @@ func _build_default_save() -> Dictionary:
 
 
 func load_from_disk() -> void:
-    var loaded := SaveService.load_save()
+    if not LearningStoreService.is_initialized():
+        LearningStoreService.initialize()
+
+    var loaded: Dictionary = {}
+    if LearningStoreService.is_runtime_store_available():
+        loaded = LearningStoreService.load_runtime_projection()
+    else:
+        if SaveService.has_v1_save():
+            loaded = SaveService.load_v1_save()
+        else:
+            loaded = LearningStoreService.build_legacy_bridge_seed()
+
     save_data = _normalize_loaded_save(loaded)
     _refresh_parent_progress()
 
 
 func persist() -> void:
-    SaveService.save_save(save_data)
+    SaveService.save_v1_save(save_data)
+    LearningStoreService.sync_legacy_bridge(save_data)
 
 
 func get_completed_session_count() -> int:
@@ -80,55 +90,36 @@ func mark_node_started(node_id: String) -> void:
     persist()
 
 
+func commit_session_summary(
+    node_id: String,
+    results: Array[Dictionary],
+    session_context: Dictionary = {}
+) -> void:
+    if node_id.is_empty():
+        return
+
+    _apply_session_results_to_progress(results)
+    _apply_completed_node(node_id)
+    _refresh_parent_progress()
+
+    if LearningStoreService.is_runtime_store_available():
+        LearningStoreService.record_session_summary(
+            _build_learning_store_session_payload(node_id, results, session_context)
+        )
+
+    persist()
+
+
 func record_completed_node(node_id: String) -> void:
     if node_id.is_empty():
         return
 
-    var progression: Dictionary = save_data.get("progression", {})
-    var completed_node_ids: Array[String] = _extract_string_array(progression.get("completed_node_ids", []))
-    if not completed_node_ids.has(node_id):
-        completed_node_ids.append(node_id)
-
-    progression["completed_node_ids"] = completed_node_ids
-    progression["last_completed_node_id"] = node_id
-    progression["last_played_node_id"] = node_id
-    save_data["progression"] = progression
+    _apply_completed_node(node_id)
     persist()
 
 
 func record_session_results(results: Array[Dictionary]) -> void:
-    var progression: Dictionary = save_data["progression"]
-    var concept_progress: Dictionary = progression.get("concepts", {})
-
-    progression["completed_session_count"] = int(progression.get("completed_session_count", 0)) + 1
-
-    for result in results:
-        var concept_id: String = String(result.get("concept_id", ""))
-        if concept_id.is_empty():
-            continue
-
-        var entry: Dictionary = concept_progress.get(concept_id, {
-            "exposure_count": 0,
-            "independent_success_count": 0,
-            "supported_success_count": 0,
-            "learned": false,
-        })
-        entry["exposure_count"] = int(entry.get("exposure_count", 0)) + 1
-
-        var outcome: String = String(result.get("outcome", ""))
-        if outcome == "independent_success":
-            entry["independent_success_count"] = int(entry.get("independent_success_count", 0)) + 1
-        elif outcome == "supported_success":
-            entry["supported_success_count"] = int(entry.get("supported_success_count", 0)) + 1
-
-        entry["learned"] = (
-            int(entry.get("exposure_count", 0)) >= 3
-            and int(entry.get("independent_success_count", 0)) >= 2
-        )
-        concept_progress[concept_id] = entry
-
-    progression["concepts"] = concept_progress
-    save_data["progression"] = progression
+    _apply_session_results_to_progress(results)
     _refresh_parent_progress()
     persist()
 
@@ -190,6 +181,66 @@ func _refresh_parent_progress() -> void:
         "symbols_learned": learned_count,
         "categories_mastered": mastered_categories,
     }
+
+
+func _apply_completed_node(node_id: String) -> void:
+    var progression: Dictionary = save_data.get("progression", {})
+    var completed_node_ids: Array[String] = _extract_string_array(progression.get("completed_node_ids", []))
+    if not completed_node_ids.has(node_id):
+        completed_node_ids.append(node_id)
+
+    progression["completed_node_ids"] = completed_node_ids
+    progression["last_completed_node_id"] = node_id
+    progression["last_played_node_id"] = node_id
+    save_data["progression"] = progression
+
+
+func _apply_session_results_to_progress(results: Array[Dictionary]) -> void:
+    var progression: Dictionary = save_data["progression"]
+    var concept_progress: Dictionary = progression.get("concepts", {})
+
+    progression["completed_session_count"] = int(progression.get("completed_session_count", 0)) + 1
+
+    for result in results:
+        var concept_id: String = String(result.get("concept_id", ""))
+        if concept_id.is_empty():
+            continue
+
+        var entry: Dictionary = concept_progress.get(concept_id, {
+            "exposure_count": 0,
+            "independent_success_count": 0,
+            "supported_success_count": 0,
+            "learned": false,
+        })
+        entry["exposure_count"] = int(entry.get("exposure_count", 0)) + 1
+
+        var outcome: String = String(result.get("outcome", ""))
+        if outcome == "independent_success":
+            entry["independent_success_count"] = int(entry.get("independent_success_count", 0)) + 1
+        elif outcome == "supported_success":
+            entry["supported_success_count"] = int(entry.get("supported_success_count", 0)) + 1
+
+        entry["learned"] = (
+            int(entry.get("exposure_count", 0)) >= 3
+            and int(entry.get("independent_success_count", 0)) >= 2
+        )
+        concept_progress[concept_id] = entry
+
+    progression["concepts"] = concept_progress
+    save_data["progression"] = progression
+
+
+func _build_learning_store_session_payload(
+    node_id: String,
+    results: Array[Dictionary],
+    session_context: Dictionary
+) -> Dictionary:
+    var payload := session_context.duplicate(true)
+    payload["learner_id"] = String(save_data.get("profile", {}).get("child_id", "default"))
+    payload["node_id"] = node_id
+    payload["results"] = results.duplicate(true)
+    payload["completed_at"] = str(int(Time.get_unix_time_from_system()))
+    return payload
 
 
 func _is_category_mastered(category_id: String) -> bool:

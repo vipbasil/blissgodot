@@ -1,286 +1,98 @@
 # Bliss
 
-Offline-first Android learning game in Godot for teaching Blissymbolics to nonverbal autistic children.
+Offline-first Godot game for helping nonverbal autistic children learn Blissymbolics through calm, short visual-matching sessions.
 
-## Product Summary
+## Status
 
-Bliss is a calm, short-session mobile game designed to help a child learn Bliss symbols through visual pairing puzzles. The first version is focused on learning, not communication output. The child interacts through drag-and-drop only, with no timers, no failure screens, and minimal text.
+This repository is the Godot implementation of Bliss.
 
-The app uses:
-- Bliss symbols
-- Consistent generated pictures
-- Short 3-5 minute sessions
-- Gentle rewards at the end of a session
-- Adaptive difficulty
+Current engine target:
+- Godot `4.6`
 
-## Audience
+Current milestone focus:
+- first playable mobile loop
+- one primary puzzle: `Anchor Match`
+- short `3` to `5` minute sessions
+- offline-first child experience
 
-Primary audience:
-- Nonverbal autistic children
+## Product Direction
 
-Initial real-world test:
-- One 10-year-old child
+Bliss is being built as a learning game first, not a full communication tool.
 
-## Platform
+Core experience goals:
+- calm presentation
+- drag-and-drop only interaction
+- no timers
+- no failure screens
+- minimal text in the child-facing flow
+- gentle end-of-session rewards
 
-- Engine: Godot
-- First target: Android
-- Offline-first: yes
-- Profiles in V1: one child profile
+Initial target platform:
+- Android
 
-## V1 Goals
+## Current First-Playable Loop
 
-The first release should teach:
-- Symbol recognition
-- Picture -> symbol matching
-- Symbol -> picture matching
+The current design center is `Anchor Match`:
+- one target picture is shown
+- the child drags the matching Bliss symbol into a drop slot
+- incorrect answers quietly simplify the round
+- repeated struggle resolves as supported success rather than failure
 
-The first release should not yet try to be a full communication tool. It should behave as a learning game first.
+The current starter concept slice is:
+- `apple`
+- `water`
+- `ball`
+- `book`
+- `dog`
+- `cat`
 
-## Child Experience Constraints
+## Open The Project
 
-Required:
-- Calm presentation
-- Drag-and-drop interaction
-- Symbols always paired with pictures at first
-- Sound effects only
-- Rewards mainly at the end of a session
+1. Install Godot `4.6`.
+2. Open `/Users/vasilibraga/bliss/project.godot` in the Godot editor.
+3. Run the main scene from the editor, or use:
 
-Avoid:
-- Timers
-- Failure screens
-- Too much text
-- Distracting sounds
-- Music in V1
+```bash
+godot --path /Users/vasilibraga/bliss
+```
 
-## Reward Model
+Main scene:
+- `res://scenes/app/main.tscn`
 
-Use:
-- Stars
-- Small animations
-- Unlocking levels or sessions
-- Gentle praise
+## Repository Layout
 
-Unlocking is based on:
-- Completing a session
+- [project.godot](/Users/vasilibraga/bliss/project.godot): Godot project configuration
+- [scenes](/Users/vasilibraga/bliss/scenes): app, screen, puzzle, and component scenes
+- [scripts](/Users/vasilibraga/bliss/scripts): gameplay, screen, progression, and model logic
+- [autoload](/Users/vasilibraga/bliss/autoload): shared app state, content loading, save service, and audio helpers
+- [data](/Users/vasilibraga/bliss/data): curriculum, config, and progression data
+- [assets](/Users/vasilibraga/bliss/assets): pictures, Bliss symbols, audio, and UI assets
+- [docs](/Users/vasilibraga/bliss/docs): design, architecture, implementation plans, and work logs
 
-## Core Puzzle Taxonomy
+## Key Docs
 
-### 1. Anchor Match
-- One picture target
-- Child drags the correct Bliss symbol from a small set of options
-- Main entry puzzle for new concepts
+- [docs/GAME_DESIGN.md](/Users/vasilibraga/bliss/docs/GAME_DESIGN.md): milestone gameplay scope and child-session rules
+- [docs/ARCHITECTURE.md](/Users/vasilibraga/bliss/docs/ARCHITECTURE.md): codebase structure and runtime ownership
+- [docs/GAMEPLAY_IMPLEMENTATION.md](/Users/vasilibraga/bliss/docs/GAMEPLAY_IMPLEMENTATION.md): gameplay implementation contract
+- [docs/MAIN_PROGRESS_IMPLEMENTATION_PLAN.md](/Users/vasilibraga/bliss/docs/MAIN_PROGRESS_IMPLEMENTATION_PLAN.md): progression-screen execution plan
+- [docs/TASKS.md](/Users/vasilibraga/bliss/docs/TASKS.md): active work queue
+- [docs/WORK_LOG.md](/Users/vasilibraga/bliss/docs/WORK_LOG.md): running project notes
 
-### 2. Reverse Anchor Match
-- One Bliss symbol target
-- Child drags the correct picture from a small set of options
-- Confirms understanding in the opposite direction
+## Git Notes
 
-### 3. Pair Completion
-- Partial picture-symbol pairs are shown
-- Child drags the missing piece into place
-- Lower-pressure reinforcement task
+Tracked on purpose:
+- `.import` files
+- `.uid` files
+- project scenes, scripts, assets, docs, and data
 
-### 4. Discrimination Match
-- Same as anchor match, but with closer distractors
-- Used after initial familiarity exists
+Ignored on purpose:
+- `.godot/`
+- `.vscode/`
+- `.DS_Store`
 
-### 5. Category Sort
-- Completed pairs are sorted into categories
-- Initial V1 categories: food, objects, animals
+## Near-Term Goals
 
-### 6. Mixed Review Chain
-- Short run of mixed puzzle prompts
-- Used near the end of a session for reinforcement and session completion
-
-## Difficulty Model
-
-Adaptive difficulty should vary:
-- Number of choices
-- Similarity of distractors
-- Drag distance
-- Density of items on screen
-- Mix of categories
-
-Error handling:
-- First wrong answer: remove one wrong option
-- Repeated struggles: step back one difficulty level
-- No hard fail state
-
-## Curriculum Structure
-
-### Band A: First Contact
-- Teach one picture maps to one Bliss symbol
-- Puzzle types: Anchor Match, Pair Completion
-- Very low choice count
-- One category at a time
-
-### Band B: Core Recognition
-- Build stable recognition for concrete concepts
-- Puzzle types: Anchor Match, Reverse Anchor Match, Pair Completion
-- Mix known and new concepts
-
-### Band C: Discrimination
-- Increase precision and reduce guessing
-- Puzzle types: Discrimination Match, Reverse Anchor Match, Mixed Review Chain
-- More similar distractors
-
-### Band D: Category Generalization
-- Strengthen grouping and retention
-- Puzzle types: Category Sort, Mixed Review Chain, harder anchor variants
-- Mixed categories in one session
-
-## V1 Starter Curriculum
-
-Target scope:
-- 40+ concepts
-
-Initial categories:
-- Food
-- Objects
-- Animals
-
-### Food
-- apple
-- banana
-- bread
-- water
-- cookie
-- cheese
-- egg
-- soup
-- rice
-- candy
-- cup
-- bottle
-- spoon
-- fork
-
-### Objects
-- ball
-- book
-- chair
-- bed
-- door
-- table
-- toy
-- doll
-- block
-- pillow
-- balloon
-- toothbrush
-- washcloth
-- coloring book
-
-### Animals
-- dog
-- cat
-- bird
-- duck
-- bear
-- pig
-- horse
-- cow
-- rabbit
-- fish
-- chicken
-- elephant
-- monkey
-- sheep
-
-## Recommended Release Order
-
-### Phase 1
-- apple
-- water
-- ball
-- book
-- dog
-- cat
-- spoon
-- chair
-
-### Phase 2
-- banana
-- bread
-- cup
-- bottle
-- bed
-- toy
-- bird
-- duck
-
-### Phase 3
-- cookie
-- cheese
-- egg
-- table
-- door
-- doll
-- block
-- pillow
-- bear
-- pig
-- fish
-- rabbit
-
-### Phase 4
-- soup
-- rice
-- candy
-- fork
-- balloon
-- toothbrush
-- washcloth
-- coloring book
-- horse
-- cow
-- chicken
-- elephant
-- monkey
-- sheep
-
-## Session Design
-
-Target session length:
-- 3-5 minutes
-
-Suggested session flow:
-1. One easy warm-up puzzle using a known concept
-2. Two teaching puzzles for new or emerging concepts
-3. Two reinforcement puzzles in reverse or completion form
-4. One mixed review chain
-5. End-of-session reward
-
-## Mastery States
-
-Each concept should move through:
-- New
-- Emerging
-- Stable
-- Mastered
-
-## Parent View
-
-V1 should include a hidden parent-facing progress screen.
-
-Track at minimum:
-- Symbols learned
-- Categories mastered
-
-## Project Positioning
-
-This project uses the existing Bliss reference repository as a knowledge base for:
-- Bliss symbol content
-- Existing puzzle ideas
-- Source data and assets
-
-The new project should not reuse that repository as the app codebase.
-
-## Next Steps
-
-Recommended next implementation documents:
-1. Godot scene architecture
-2. Data model for curriculum and progress
-3. Adaptive difficulty rules in exact logic
-4. Asset pipeline for Bliss symbols and generated pictures
+- finish the first stable `Anchor Match` session loop
+- wire `MainProgressScreen` cleanly into the child flow
+- keep progression and save-state contracts simple and durable
+- preserve a calm UX over test-like difficulty
